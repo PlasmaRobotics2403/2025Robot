@@ -7,19 +7,29 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.lib.controllers.PlasmaJoystick;
+import frc.robot.StateManager.robotState;
+import frc.robot.subsystems.Climb;
+import frc.robot.subsystems.Climb.climbState;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
-
   private final RobotContainer m_robotContainer;
+  private PlasmaJoystick driver;
+  Climb climb = new Climb();
+  StateManager stateManager = new StateManager(climb);
+  
 
   public Robot() {
+    driver = new PlasmaJoystick(0);
     m_robotContainer = new RobotContainer();
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
+    climb.periodic();
+    stateManager.periodic();
   }
 
   @Override
@@ -54,7 +64,20 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+
+    if(driver.A.isPressed()) {
+      stateManager.setState(robotState.CLIMBUP);
+    } 
+    else if(driver.B.isPressed()) {
+      stateManager.setState(robotState.CLIMBDOWN);
+    }
+    else {
+      stateManager.setState(robotState.IDLE);
+    }
+  
+
+  }
 
   @Override
   public void teleopExit() {}
