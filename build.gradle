@@ -75,6 +75,7 @@ dependencies {
 }
 
 test {
+    environment "KEY", "VALUE"
     useJUnitPlatform()
     systemProperty 'junit.jupiter.extensions.autodetection.enabled', 'true'
 }

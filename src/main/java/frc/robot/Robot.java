@@ -4,18 +4,25 @@
 
 package frc.robot;
 
+import org.photonvision.PhotonCamera;
+
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.simulation.BatterySim;
+import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.controllers.PlasmaJoystick;
 import frc.robot.StateManager.robotState;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Climb.climbState;
+import frc.robot.subsystems.Vision;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private final RobotContainer m_robotContainer;
   private PlasmaJoystick driver;
+  
+  Vision vision = new Vision();
   Climb climb = new Climb();
   StateManager stateManager = new StateManager(climb);
   
@@ -23,6 +30,7 @@ public class Robot extends TimedRobot {
   public Robot() {
     driver = new PlasmaJoystick(0);
     m_robotContainer = new RobotContainer();
+  
   }
 
   @Override
@@ -30,6 +38,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run(); 
     climb.periodic();
     stateManager.periodic();
+    vision.log();
+    vision.update();
   }
 
   @Override
@@ -94,5 +104,8 @@ public class Robot extends TimedRobot {
   public void testExit() {}
 
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+    
+    }
+
 }
