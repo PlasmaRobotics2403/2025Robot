@@ -7,11 +7,9 @@ import frc.robot.StateManager.robotState;
 
 public class AutoRoutines {
     private final AutoFactory m_factory;
-    private final StateManager stateManager;
 
-    public AutoRoutines(AutoFactory factory, StateManager stateManager) {
+    public AutoRoutines(AutoFactory factory) {
         m_factory = factory;
-        this.stateManager = stateManager;
     }
 
     public AutoRoutine simplePathAuto() {
