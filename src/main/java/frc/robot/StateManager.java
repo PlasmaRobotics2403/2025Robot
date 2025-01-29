@@ -1,9 +1,11 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Climb.climbState;
 
-public class StateManager {
+public class StateManager extends SubsystemBase {
 
     // Components of the robot
     public Climb climb;
@@ -27,6 +29,9 @@ public class StateManager {
         return currentState;
     }
 
+    public Command setStateCommand(robotState state) {
+        return  this.runOnce(() -> setState(state));
+    }
     public void periodic() {
         switch(currentState) {
             case IDLE:

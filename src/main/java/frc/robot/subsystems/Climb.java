@@ -5,9 +5,11 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ClimbConstants;
 
-public class Climb {
+public class Climb{
     private TalonSRX climbMotor;
 
     public climbState currentState;
@@ -33,6 +35,7 @@ public class Climb {
     public void runClimb(double speed) {
         climbMotor.set(ControlMode.PercentOutput, speed);
     }
+
 
     public void periodic() {
         switch (currentState) {
