@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonSRX;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.ClimbConstants;
 
 public class Climb{
@@ -22,7 +23,14 @@ public class Climb{
     public Climb() {
         climbMotor = new TalonSRX(ClimbConstants.CLIMB_MOTOR_ID);
         climbMotor.setNeutralMode(NeutralMode.Brake);
+
+        climbMotor.config_kF(Constants.ClimbConstants.PID_IDX, Constants.ClimbConstants.kF, Constants.TIMEOUT_MS);
+        climbMotor.config_kP(Constants.ClimbConstants.PID_IDX, Constants.ClimbConstants.kP, Constants.TIMEOUT_MS);
+        climbMotor.config_kI(Constants.ClimbConstants.PID_IDX, Constants.ClimbConstants.kI, Constants.TIMEOUT_MS);
+        climbMotor.config_kD(Constants.ClimbConstants.PID_IDX, Constants.ClimbConstants.kD, Constants.TIMEOUT_MS);
+
         currentState = climbState.IDLE;
+
     }
 
     public void setState(climbState state) {
@@ -36,6 +44,9 @@ public class Climb{
         climbMotor.set(ControlMode.PercentOutput, speed);
     }
 
+    public void magicClimb(double pos) {
+        climbMotor.set(ControlMode.MotionMagic, pos);
+    }
 
     public void periodic() {
         switch (currentState) {

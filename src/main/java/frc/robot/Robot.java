@@ -29,7 +29,7 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     driver = new PlasmaJoystick(0);
-    m_robotContainer = new RobotContainer();
+    m_robotContainer = new RobotContainer(stateManager);
   
   }
 

@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.google.gson.FieldNamingStrategy;
+
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.Matrix;
@@ -12,6 +14,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.util.Units;
 
 public class Constants {
+    public static final int TIMEOUT_MS = 60;
 
      public static class VisionConstants {
         public static final String kCameraName = "PlasmaCam";
@@ -24,6 +27,16 @@ public class Constants {
     
     public class ClimbConstants {
         public static final int CLIMB_MOTOR_ID = 0;
-        public static final double CLIMB_SPEED = 0.5 ;
+        public static final double CLIMB_SPEED = 0.5;
+         
+        public static final int PID_IDX = 1;
+
+        // ----------- PID ------------ //
+        public static final double kF = 0.1;
+        public static final double kP = 0.1;
+        public static final double kI = 0.0;
+        public static final double kD = 0.0;
+
+        
     }
 }

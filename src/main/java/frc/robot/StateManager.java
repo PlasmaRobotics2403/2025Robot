@@ -25,12 +25,17 @@ public class StateManager extends SubsystemBase {
     public void setState(robotState state) {
         currentState = state;
     }
+
     public robotState getState() {
         return currentState;
     }
 
     public Command setStateCommand(robotState state) {
-        return  this.runOnce(() -> setState(state));
+        return runOnce(
+            () -> {
+                setState(state);
+            });
+
     }
     public void periodic() {
         switch(currentState) {
