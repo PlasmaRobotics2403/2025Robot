@@ -6,6 +6,9 @@ package frc.robot;
 
 import org.photonvision.PhotonCamera;
 
+import com.ctre.phoenix6.swerve.jni.SwerveJNI.DriveState;
+
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
@@ -14,7 +17,10 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.lib.controllers.PlasmaJoystick;
 import frc.robot.StateManager.robotState;
 import frc.robot.subsystems.Climb;
+import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Climb.climbState;
+import frc.robot.subsystems.Intake.intakeState;
+import frc.robot.subsystems.Vision.robotSideState;
 import frc.robot.subsystems.Vision;
 
 public class Robot extends TimedRobot {
@@ -24,7 +30,8 @@ public class Robot extends TimedRobot {
   
   Vision vision = new Vision();
   Climb climb = new Climb();
-  StateManager stateManager = new StateManager(climb);
+  Intake intake = new Intake();
+  StateManager stateManager = new StateManager(climb, intake);
   
 
   public Robot() {
@@ -38,7 +45,6 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run(); 
     climb.periodic();
     stateManager.periodic();
-    vision.log();
     vision.update();
   }
 
@@ -76,11 +82,28 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
-    if(driver.A.isPressed()) {
+    if(driver.dPad.getPOV() == 0) {
       stateManager.setState(robotState.CLIMBUP);
+      DriverStation.reportWarning("Climb!!!!!!!!!!!", true);
+
     } 
-    else if(driver.B.isPressed()) {
+    else if(driver.dPad.getPOV() == 180) {
       stateManager.setState(robotState.CLIMBDOWN);
+      DriverStation.reportWarning("Climb!!!!!!!!!!!", true);
+    }
+    else if(driver.RT.isPressed()) {
+      intake.setState(intakeState.INTAKE);
+    }
+    else if(driver.A.isPressed()) {
+      stateManager.setState(robotState.TESTINTAKEUP);
+    }
+    else if(driver.B.isPressed()) {
+      stateManager.setState(robotState.TESTINTAKEDOWN);
+    }
+    else if(driver.X.isPressed()) {
+      //stateManager.setState(robotState.OUTTAKE);
+      intake.setState(intakeState.OUTTAKE);
+      DriverStation.reportWarning("Intake", false);
     }
     else {
       stateManager.setState(robotState.IDLE);
@@ -106,6 +129,6 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {
     
-    }
+  }
 
 }

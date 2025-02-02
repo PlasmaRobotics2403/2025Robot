@@ -31,7 +31,7 @@ public class AutoRoutines {
     }
     public AutoRoutine testAuto() {
         final AutoRoutine routine = m_factory.newRoutine("Test Auto");
-        routine.active().onTrue(stateManager.setStateCommand(null));
+        //routine.active().onTrue(stateManager.setStateCommand(null));
 
         return routine;
     }

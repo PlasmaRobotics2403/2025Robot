@@ -24,7 +24,38 @@ public class Constants {
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
     }
-    
+
+    public static class IntakeConstants {
+        public static final int INTAKE_MOTOR_ID = 3;
+        public static final int ROT_MOTOR_ID = 2;
+        public static final double INTAKE_SPEED = 0.3;
+
+        //Positions
+        public static final double INTAKE_UP_POS = 0;
+        public static final double INTAKE_DOWN_POS = 0;
+
+        // Rotation Pid
+        public static final double intakePivotKS = 0.25;
+        public static final double intakePivotKV = 0.12;
+        public static final double intakePivotKP = 10;
+        public static final double intakePivotKD = 0;
+
+        public static final double intakePivotVel = 180;
+        public static final double intakePivotAccel = 360;
+        public static final double intakePivotJerk = 3600;
+
+        // Velocity Pid
+        public static final double intakeVelocityKS = 0.25;
+        public static final double intakeVelocityKV = 0.12;
+        public static final double intakeVelocityKA = 0.01;
+        public static final double intakeVelocityKP = 0.11;
+        public static final double intakeVelocityKI = 0;
+        public static final double intakeVelocityKD = 0;
+
+        public static final double intakeVelocityAccel = 400;
+        public static final double intakeVelocityJerk = 4000; 
+
+    }
     public class ClimbConstants {
         public static final int CLIMB_MOTOR_ID = 0;
         public static final double CLIMB_SPEED = 0.5;
