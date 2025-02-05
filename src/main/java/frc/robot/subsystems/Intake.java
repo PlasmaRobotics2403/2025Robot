@@ -34,26 +34,10 @@ public class Intake {
     }
 
     public Intake() {
-        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID);
-        rotMotor = new TalonFX(IntakeConstants.ROT_MOTOR_ID);
+        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, "rio");
+        rotMotor = new TalonFX(IntakeConstants.ROT_MOTOR_ID, "rio");
         currentState = intakeState.IDLE;
-        /*/
-        var intakeVelocityConfigs = new TalonFXConfiguration();
 
-        var velocitySlot0Configs = intakeVelocityConfigs.Slot0;
-        velocitySlot0Configs.kS = IntakeConstants.intakeVelocityKS;
-        velocitySlot0Configs.kV = IntakeConstants.intakeVelocityKV;
-        velocitySlot0Configs.kA = IntakeConstants.intakeVelocityKA;
-        velocitySlot0Configs.kP = IntakeConstants.intakeVelocityKP;
-        velocitySlot0Configs.kI = IntakeConstants.intakeVelocityKI;
-        velocitySlot0Configs.kD = IntakeConstants.intakeVelocityKD;
-
-        var velocityMotionMagicConfigs = intakeVelocityConfigs.MotionMagic;
-        velocityMotionMagicConfigs.MotionMagicAcceleration = IntakeConstants.intakeVelocityAccel;    //rps/s
-        velocityMotionMagicConfigs.MotionMagicJerk = IntakeConstants.intakeVelocityJerk;             //rps/s/s
-
-        intakeMotor.getConfigurator().apply(intakeVelocityConfigs);
-        */
         // pivot motion magic configuration
         final TalonFXConfiguration intakeRotConfigs = new TalonFXConfiguration();
         var pivotSlot0Configs = intakeRotConfigs.Slot0;
@@ -86,18 +70,9 @@ public class Intake {
 
 
     }
-
-    public void runIntake(double rps) {
-        final MotionMagicVelocityVoltage r_request = new MotionMagicVelocityVoltage(0);
-        r_request.Acceleration = 0;
-        r_request.EnableFOC = true;
-
-        intakeMotor.setControl(r_request.withVelocity(rps));
-    }
-    public void runIntakeTest(double speed) {
-        final DutyCycleOut r_request = new DutyCycleOut(0);
-        r_request.EnableFOC = true;
-        intakeMotor.setControl(r_request.withOutput(speed));
+    public void runIntake(double speed) {
+        DutyCycleOut intakeRequest = new DutyCycleOut(0.0);
+        intakeMotor.setControl(intakeRequest.withOutput(speed));
     }
     public void rotIntake(double pos) {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
@@ -126,21 +101,20 @@ public class Intake {
 
     public void periodic() {
         log();
-
         switch(currentState){
             case IDLE:
-                runIntakeTest(0);
+                runIntake(0);
                 rotIntakePercent(0);
                 //rotIntake(IntakeConstants.INTAKE_UP_POS);
                 break;
             case INTAKE:
-                runIntakeTest(IntakeConstants.INTAKE_SPEED);
-                DriverStation.reportWarning("Intaking!!", false);
+                runIntake(IntakeConstants.INTAKE_SPEED);
+                DriverStation.reportWarning("Intaking!!", true);
                 //rotIntake(IntakeConstants.INTAKE_DOWN_POS);
                 break;
             case OUTTAKE:
-                runIntakeTest(-IntakeConstants.INTAKE_SPEED);
-                DriverStation.reportWarning("Intaking!!", false);
+                runIntake(-IntakeConstants.INTAKE_SPEED);
+                DriverStation.reportWarning("Intaking!!", true);
 
                 //rotIntake(IntakeConstants.INTAKE_DOWN_POS);
                 break;
@@ -150,6 +124,8 @@ public class Intake {
             case ROTDOWN:
                 rotIntakePercent(-0.3);
                 break;
+
+
         }
     }
 }

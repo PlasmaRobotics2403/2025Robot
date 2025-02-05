@@ -56,6 +56,26 @@ public class Constants {
         public static final double intakeVelocityJerk = 4000; 
 
     }
+
+    public class ElevatorConstants {
+        public static final int ELEVATOR_MOTOR_ID = 4;
+
+        // Elevator Poses
+        public static final double STOWED_HEIGHT = 0;
+        public static final double LOWEST_HEIGHT = 0;
+        public static final double MIDDLE_HEIGHT = 0;
+        public static final double TOP_HEIGHT = 0;
+
+        public static final double elevatorPosKS = 0.25;
+        public static final double elevatorPosKV = 0.12;
+        public static final double elevatorPosKP = 10;
+        public static final double elevatorPosKD = 0;
+
+        public static final double elevatorPosVel = 180;
+        public static final double elevatorPosAccel = 360;
+        public static final double elevatorPosJerk = 3600;
+
+    }
     public class ClimbConstants {
         public static final int CLIMB_MOTOR_ID = 0;
         public static final double CLIMB_SPEED = 0.5;

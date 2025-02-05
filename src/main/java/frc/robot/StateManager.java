@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Climb.climbState;
+import frc.robot.subsystems.Elevator.elevatorState;
+import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake.intakeState;
 
 public class StateManager extends SubsystemBase {
@@ -12,9 +14,13 @@ public class StateManager extends SubsystemBase {
     // Components of the robot
     public Climb climb;
     public Intake intake;
+    public Elevator elevator;
     public robotState currentState;
     public enum robotState {
         IDLE,
+        TOPHEIGHT,
+        MIDDLEHEIGHT,
+        LOWHEIGHT,
         CLIMBUP,
         CLIMBDOWN,
         TESTINTAKEUP,
@@ -23,7 +29,7 @@ public class StateManager extends SubsystemBase {
         OUTTAKE
     }
 
-    public StateManager(Climb climb, Intake intake) {
+    public StateManager(Climb climb, Intake intake, Elevator elevator) {
         currentState = robotState.IDLE;
         this.climb = climb;
         this.intake = intake;
@@ -49,6 +55,16 @@ public class StateManager extends SubsystemBase {
             case IDLE:
                 climb.setState(climbState.IDLE);
                 intake.setState(intakeState.IDLE);
+                elevator.setState(elevatorState.STOWED);
+                break;
+            case TOPHEIGHT:
+                elevator.setState(elevatorState.TOPHEIGHT);
+                break;
+            case MIDDLEHEIGHT:
+                elevator.setState(elevatorState.MIDDLEHEIGHT);
+                break;
+            case LOWHEIGHT:
+                elevator.setState(elevatorState.FIRSTHEIGHT);
                 break;
             case CLIMBUP:
                 climb.setState(climbState.CLIMBUP);
@@ -68,8 +84,7 @@ public class StateManager extends SubsystemBase {
             case OUTTAKE:
                 intake.setState(intakeState.OUTTAKE);
                 break;
-            default:
-                setState(robotState.IDLE);
+
         
         }
     }
