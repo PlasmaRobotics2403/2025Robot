@@ -25,6 +25,8 @@ import frc.robot.subsystems.Climb.climbState;
 import frc.robot.subsystems.Intake.intakeState;
 import frc.robot.subsystems.Vision.robotSideState;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Arm;
+import frc.robot.subsystems.Arm.armOuttakeState;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -35,7 +37,8 @@ public class Robot extends TimedRobot {
   Climb climb = new Climb();
   Intake intake = new Intake();
   Elevator elevator = new Elevator();
-  StateManager stateManager = new StateManager(climb, intake, elevator);
+  Arm arm = new Arm();
+  StateManager stateManager = new StateManager(climb, intake, elevator, arm);
   
 
   public Robot() {
@@ -49,6 +52,8 @@ public class Robot extends TimedRobot {
     CommandScheduler.getInstance().run(); 
     climb.periodic();
     intake.periodic();
+    elevator.periodic();
+    arm.periodic();
     stateManager.periodic();
     vision.update();
   }
@@ -92,6 +97,9 @@ public class Robot extends TimedRobot {
       DriverStation.reportWarning("Climb!!!!!!!!!!!", true);
 
     } 
+    else if(driver.getPOV() == 90) {
+      stateManager.setState(robotState.ARMMIDPOS);
+    }
     else if(driver.getPOV() == 180) {
       stateManager.setState(robotState.CLIMBDOWN);
       DriverStation.reportWarning("Climb!!!!!!!!!!!", true);

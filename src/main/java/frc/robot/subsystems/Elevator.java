@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import frc.robot.Constants.ElevatorConstants;
 
@@ -21,6 +22,7 @@ public class Elevator {
     public Elevator() {
         elevatorMotor = new TalonFX(ElevatorConstants.ELEVATOR_MOTOR_ID);
 
+        currentState = elevatorState.STOWED;
         final TalonFXConfiguration elevatorPosConfigs = new TalonFXConfiguration();
         elevatorPosConfigs.CurrentLimits.StatorCurrentLimit = 40;
         elevatorPosConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
@@ -40,6 +42,11 @@ public class Elevator {
         pivotMotionMagicConfigs.MotionMagicCruiseVelocity = ElevatorConstants.elevatorPosVel;    //rps
         pivotMotionMagicConfigs.MotionMagicAcceleration = ElevatorConstants.elevatorPosAccel;    //rps/s
         pivotMotionMagicConfigs.MotionMagicJerk = ElevatorConstants.elevatorPosJerk;          //rps/s/s
+
+        elevatorMotor.getConfigurator().apply(elevatorPosConfigs);
+
+        elevatorMotor.setNeutralMode(NeutralModeValue.Brake);
+        elevatorMotor.setPosition(0);
     }
 
     public void magicElevator(double pos) {

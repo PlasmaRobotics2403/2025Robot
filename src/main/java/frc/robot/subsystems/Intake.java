@@ -10,6 +10,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.controls.PositionVoltage;
 import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
@@ -38,12 +39,17 @@ public class Intake {
         rotMotor = new TalonFX(IntakeConstants.ROT_MOTOR_ID, "rio");
         currentState = intakeState.IDLE;
 
+        final TalonFXConfiguration intakeConfigs = new TalonFXConfiguration();
+        intakeConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        rotMotor.getConfigurator().apply(intakeConfigs);
+
         // pivot motion magic configuration
         final TalonFXConfiguration intakeRotConfigs = new TalonFXConfiguration();
         var pivotSlot0Configs = intakeRotConfigs.Slot0;
 
         intakeRotConfigs.CurrentLimits.StatorCurrentLimit = 40;
         intakeRotConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
+        
 
         pivotSlot0Configs.kS = IntakeConstants.intakePivotKS;
         pivotSlot0Configs.kV = IntakeConstants.intakePivotKV;
@@ -113,7 +119,7 @@ public class Intake {
                 //rotIntake(IntakeConstants.INTAKE_DOWN_POS);
                 break;
             case OUTTAKE:
-                runIntake(-IntakeConstants.INTAKE_SPEED);
+                runIntake(IntakeConstants.INTAKE_SPEED);
                 DriverStation.reportWarning("Intaking!!", true);
 
                 //rotIntake(IntakeConstants.INTAKE_DOWN_POS);

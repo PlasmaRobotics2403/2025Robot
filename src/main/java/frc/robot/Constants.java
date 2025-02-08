@@ -28,7 +28,7 @@ public class Constants {
     public static class IntakeConstants {
         public static final int INTAKE_MOTOR_ID = 3;
         public static final int ROT_MOTOR_ID = 2;
-        public static final double INTAKE_SPEED = 0.3;
+        public static final double INTAKE_SPEED = 0.6;
 
         //Positions
         public static final double INTAKE_UP_POS = 0;
@@ -75,6 +75,30 @@ public class Constants {
         public static final double elevatorPosAccel = 360;
         public static final double elevatorPosJerk = 3600;
 
+    }
+
+    public class ArmConstants {
+        public static final int armRotID = 5;
+        public static final int armOuttakeID = 6;
+        public static final double armRunSpeed = 0.3;
+
+        public static final double armPosKS = 0.25;
+        public static final double armPosKV = 0.3;
+        public static final double armPosKA = 0.01;
+        public static final double armPosKP = 5.0;
+        public static final double armPosKD = 0;
+
+        // Arm Poses
+        public static final double armStowedPos = 0;
+        public static final double armLowPos = 0;
+        public static final double armMidPos = -35;
+        public static final double armHighPos = 0;
+        public static final double armFeedPos = 0;
+
+        public static final double armPosVel = 180;
+        public static final double armPosAccel = 360;
+        public static final double armPosJerk = 2000;
+        
     }
     public class ClimbConstants {
         public static final int CLIMB_MOTOR_ID = 0;
