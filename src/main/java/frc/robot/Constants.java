@@ -28,7 +28,10 @@ public class Constants {
     public static class IntakeConstants {
         public static final int INTAKE_MOTOR_ID = 3;
         public static final int ROT_MOTOR_ID = 2;
-        public static final double INTAKE_SPEED = 0.6;
+        public static final int INDEX_MOTOR_ID = 7;
+
+        public static final double INTAKE_SPEED = 0.5;
+        public static final double INDEX_SPEED = 0.3;
 
         //Positions
         public static final double INTAKE_UP_POS = 0;

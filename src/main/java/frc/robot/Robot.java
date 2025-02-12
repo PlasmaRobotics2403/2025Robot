@@ -95,7 +95,6 @@ public class Robot extends TimedRobot {
     if(driver.getPOV() == 0) {
       stateManager.setState(robotState.CLIMBUP);
       DriverStation.reportWarning("Climb!!!!!!!!!!!", true);
-
     } 
     else if(driver.getPOV() == 90) {
       stateManager.setState(robotState.ARMMIDPOS);
@@ -105,6 +104,9 @@ public class Robot extends TimedRobot {
       DriverStation.reportWarning("Climb!!!!!!!!!!!", true);
     }
     else if(driver.getRightTriggerAxis() >= 0.3) {
+      stateManager.setState(robotState.INTAKE);
+    }
+    else if(driver.getXButton() == true) {
       stateManager.setState(robotState.OUTTAKE);
     }
     else if(driver.getAButtonPressed()) {
@@ -112,11 +114,6 @@ public class Robot extends TimedRobot {
     }
     else if(driver.getBButtonPressed()) {
       stateManager.setState(robotState.TESTINTAKEDOWN);
-    }
-    else if(driver.getXButtonPressed()) {
-      //stateManager.setState(robotState.OUTTAKE);
-      stateManager.setState(robotState.OUTTAKE);
-      DriverStation.reportWarning("Intake", false);
     }
     else {
       stateManager.setState(robotState.IDLE);

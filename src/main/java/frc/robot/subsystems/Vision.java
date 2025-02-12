@@ -16,11 +16,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Vision {
 
+    private PIDController xController;
+    private PIDController yController;
     public enum robotSideState {
         LEFT,
         RIGHT
     }
-    public robotSideState currenState = robotSideState.LEFT;
+    public robotSideState currentState = robotSideState.LEFT;
     public PIDController movementXController;
     public PIDController movementYController;
 
@@ -28,6 +30,8 @@ public class Vision {
     private Pose3d robotPose = new Pose3d();
     PhotonCamera camera;
     public Vision() {
+        xController = new PIDController(0, 0, 0);
+        yController = new PIDController(0, 0, 0);
 
         camera = new PhotonCamera("Plasma Cam");
         if (camera.getLatestResult() != null) {
@@ -44,36 +48,36 @@ public class Vision {
         }
   
     }
-    public double moveRobotPoseLeft() {
+    public double moveRobotPoseX(double sideX, double currentPos) {
         if(camera.getAllUnreadResults() != null) {
-            return 0; 
+            return xController.calculate(sideX, currentPos);
         }
-        return 0;
+        else {
+            return 0;
+        }
     }
     public void log() {
         SmartDashboard.putNumber("RobotPoseX", robotPose.getX());
         SmartDashboard.putNumber("RobotPoseY", robotPose.getY());
         SmartDashboard.putNumber("Robot Yaw", robotPose.getRotation().getZ());
-        SmartDashboard.putData(null);
     }
     
     public void setRobotSide(robotSideState state) {
-        currenState = state;
+        currentState = state;
     }
 
     public robotSideState getState() {
-        return currenState;
+        return currentState;
     }
 
     
     public void update() {
         log();
 
-        switch (currenState) {
+        switch (currentState) {
             case LEFT:
 
                 break;
-        
             case RIGHT:
                 
                 break;

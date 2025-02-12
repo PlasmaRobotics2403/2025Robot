@@ -12,6 +12,12 @@ import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.servohub.ServoHub.ResetMode;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -23,6 +29,7 @@ public class Intake {
     
     public TalonFX intakeMotor;
     public TalonFX rotMotor;
+    public SparkMax indexMotor;
 
     public intakeState currentState;
     
@@ -37,10 +44,11 @@ public class Intake {
     public Intake() {
         intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, "rio");
         rotMotor = new TalonFX(IntakeConstants.ROT_MOTOR_ID, "rio");
+        indexMotor = new SparkMax(IntakeConstants.INDEX_MOTOR_ID, MotorType.kBrushless);
         currentState = intakeState.IDLE;
 
         final TalonFXConfiguration intakeConfigs = new TalonFXConfiguration();
-        intakeConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+        intakeConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
         rotMotor.getConfigurator().apply(intakeConfigs);
 
         // pivot motion magic configuration
@@ -80,6 +88,9 @@ public class Intake {
         DutyCycleOut intakeRequest = new DutyCycleOut(0.0);
         intakeMotor.setControl(intakeRequest.withOutput(speed));
     }
+    public void runIndex(double speed) {
+        indexMotor.set(speed);
+    }
     public void rotIntake(double pos) {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
         rotMotor.setControl(m_request.withPosition(pos));
@@ -115,11 +126,14 @@ public class Intake {
                 break;
             case INTAKE:
                 runIntake(IntakeConstants.INTAKE_SPEED);
+                runIndex(IntakeConstants.INDEX_SPEED);
                 DriverStation.reportWarning("Intaking!!", true);
                 //rotIntake(IntakeConstants.INTAKE_DOWN_POS);
                 break;
             case OUTTAKE:
-                runIntake(IntakeConstants.INTAKE_SPEED);
+                runIntake(-IntakeConstants.INTAKE_SPEED);
+                runIndex(-IntakeConstants.INDEX_SPEED);
+
                 DriverStation.reportWarning("Intaking!!", true);
 
                 //rotIntake(IntakeConstants.INTAKE_DOWN_POS);
