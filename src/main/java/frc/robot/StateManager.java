@@ -23,19 +23,18 @@ public class StateManager extends SubsystemBase {
     public robotState currentState;
     public enum robotState {
         IDLE,
-        TOPHEIGHT,
-        MIDDLEHEIGHT,
-        LOWHEIGHT,
+        LEVELFOURSCORE,
+        LEVELTHREESCORE,
+        LEVELTWOSCORE,
+        LEVELONESCORE,
+        FEEDER,
         CLIMBUP,
         CLIMBDOWN,
         TESTINTAKEUP,
         TESTINTAKEDOWN,
         INTAKE,
         OUTTAKE,
-        ARMFEEDPOS,
-        ARMLOWPOS,
-        ARMMIDPOS,
-        ARMHIGHPOS
+
     }
 
     public StateManager(Climb climb, Intake intake, Elevator elevator, Arm arm) {
@@ -66,19 +65,22 @@ public class StateManager extends SubsystemBase {
             case IDLE:
                 climb.setState(climbState.IDLE);
                 intake.setState(intakeState.IDLE);
-                elevator.setState(elevatorState.STOWED);
+                elevator.setState(elevatorState.IDLE);
 
                 arm.setIntakeState(armOuttakeState.IDLE);
                 arm.setRotState(armRotState.IDLE);
                 break;
-            case TOPHEIGHT:
-                elevator.setState(elevatorState.TOPHEIGHT);
+            case LEVELONESCORE:
+                elevator.setState(elevatorState.LEVELONEHEIGHT);
                 break;
-            case MIDDLEHEIGHT:
-                elevator.setState(elevatorState.MIDDLEHEIGHT);
+            case LEVELTWOSCORE:
+                elevator.setState(elevatorState.LEVELTWOHEIGHT);
                 break;
-            case LOWHEIGHT:
-                elevator.setState(elevatorState.FIRSTHEIGHT);
+            case LEVELTHREESCORE:
+                elevator.setState(elevatorState.LEVELTHREEHEIGHT);
+                break;
+            case LEVELFOURSCORE:
+                elevator.setState(elevatorState.LEVELFOURHEIGHT);
                 break;
             case CLIMBUP:
                 climb.setState(climbState.CLIMBUP);
@@ -98,9 +100,7 @@ public class StateManager extends SubsystemBase {
             case OUTTAKE:
                 intake.setState(intakeState.OUTTAKE);
                 break;
-            case ARMMIDPOS:
-                arm.setRotState(armRotState.MIDPOS);
-                break;
+
         }
     }
 }

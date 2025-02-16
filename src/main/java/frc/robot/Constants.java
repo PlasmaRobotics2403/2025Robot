@@ -61,21 +61,24 @@ public class Constants {
     }
 
     public class ElevatorConstants {
-        public static final int ELEVATOR_MOTOR_ID = 4;
+        public static final int ELEVATOR_MOTOR_ONE_ID = 4;
+        public static final int ELEVATOR_MOTOR_TWO_ID = 8;
 
         // Elevator Poses
-        public static final double STOWED_HEIGHT = 0;
-        public static final double LOWEST_HEIGHT = 0;
-        public static final double MIDDLE_HEIGHT = 0;
-        public static final double TOP_HEIGHT = 0;
+        public static final double LEVEL1_HEIGHT = 70;
+        public static final double LEVEL2_HEIGHT = 0;
+        public static final double LEVEL3_HEIGHT = 0;
+        public static final double LEVEL4_HEIGHT = 0;
+        public static final double FEEDER_HEIGHT = 0;
+
 
         public static final double elevatorPosKS = 0.25;
         public static final double elevatorPosKV = 0.12;
         public static final double elevatorPosKP = 10;
         public static final double elevatorPosKD = 0;
 
-        public static final double elevatorPosVel = 180;
-        public static final double elevatorPosAccel = 360;
+        public static final double elevatorPosVel = 100;
+        public static final double elevatorPosAccel = 200;
         public static final double elevatorPosJerk = 3600;
 
     }
@@ -83,6 +86,7 @@ public class Constants {
     public class ArmConstants {
         public static final int armRotID = 5;
         public static final int armOuttakeID = 6;
+        public static final int armCancoderID = 1;
         public static final double armRunSpeed = 0.3;
 
         public static final double armPosKS = 0.25;

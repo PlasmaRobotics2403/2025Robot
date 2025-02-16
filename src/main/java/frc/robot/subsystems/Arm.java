@@ -1,10 +1,15 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.CANCoderConfiguration;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ArmConstants;
@@ -12,6 +17,7 @@ import frc.robot.Constants.ArmConstants;
 public class Arm {
     private TalonFX rotMotor;
     private TalonFX endEffectorMotor;
+    private CANcoder armEncoder;
 
     public armOuttakeState currentOuttakeState;
     public enum armOuttakeState {
@@ -31,14 +37,22 @@ public class Arm {
     public Arm() {
         rotMotor = new TalonFX(ArmConstants.armRotID);
         endEffectorMotor = new TalonFX(ArmConstants.armOuttakeID);
+        armEncoder = new CANcoder(ArmConstants.armCancoderID);
 
         currentOuttakeState = armOuttakeState.IDLE;
         currentRotState = armRotState.IDLE;
+
+        CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
+        encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        armEncoder.getConfigurator().apply(encoderConfig);
 
         final TalonFXConfiguration armPosConfigs = new TalonFXConfiguration();
         armPosConfigs.CurrentLimits.StatorCurrentLimit = 40;
         armPosConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         armPosConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+        armPosConfigs.Feedback.FeedbackRemoteSensorID = armEncoder.getDeviceID();
+        armPosConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
         var pivotSlot0Configs = armPosConfigs.Slot0;
 
@@ -56,6 +70,8 @@ public class Arm {
         pivotMotionMagicConfigs.MotionMagicAcceleration = ArmConstants.armPosAccel;    //rps/s
         pivotMotionMagicConfigs.MotionMagicJerk = ArmConstants.armPosJerk;          //rps/s/s
 
+       
+
         rotMotor.getConfigurator().apply(armPosConfigs);
 
         rotMotor.setPosition(0);
@@ -71,7 +87,7 @@ public class Arm {
     }
 
     public double getRot() {
-        return rotMotor.getRotorPosition().getValueAsDouble();
+        return armEncoder.getPosition().getValueAsDouble();
     }
 
     public void setRotState(armRotState state) {

@@ -48,9 +48,17 @@ public class Vision {
         }
   
     }
-    public double moveRobotPoseX(double sideX, double currentPos) {
-        if(camera.getAllUnreadResults() != null) {
-            return xController.calculate(sideX, currentPos);
+    public double moveRobotPoseX(double wantedPos) {
+        if(robotPose.getX() != 0) {
+            return movementXController.calculate(robotPose.getX() - wantedPos);
+        }
+        else {
+            return 0;
+        }
+    }
+    public double moveRobotPoseY(double wantedPos) {
+        if(robotPose.getY() != 0) {
+            return movementYController.calculate(robotPose.getY() - wantedPos);
         }
         else {
             return 0;
