@@ -31,7 +31,7 @@ public class Constants {
         public static final int INDEX_MOTOR_ID = 7;
 
         public static final double INTAKE_SPEED = 0.5;
-        public static final double INDEX_SPEED = 0.3;
+        public static final double INDEX_SPEED = 0.6;
 
         //Positions
         public static final double INTAKE_UP_POS = 0;
@@ -66,9 +66,9 @@ public class Constants {
 
         // Elevator Poses
         public static final double LEVEL1_HEIGHT = 70;
-        public static final double LEVEL2_HEIGHT = 0;
-        public static final double LEVEL3_HEIGHT = 0;
-        public static final double LEVEL4_HEIGHT = 0;
+        public static final double LEVEL2_HEIGHT = 20;
+        public static final double LEVEL3_HEIGHT = 40;
+        public static final double LEVEL4_HEIGHT = 70;
         public static final double FEEDER_HEIGHT = 0;
 
 
@@ -98,7 +98,7 @@ public class Constants {
         // Arm Poses
         public static final double armStowedPos = 0;
         public static final double armLowPos = 0;
-        public static final double armMidPos = -35;
+        public static final double armMidPos = 0.5;
         public static final double armHighPos = 0;
         public static final double armFeedPos = 0;
 

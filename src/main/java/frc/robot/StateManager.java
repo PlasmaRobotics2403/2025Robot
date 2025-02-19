@@ -33,7 +33,8 @@ public class StateManager extends SubsystemBase {
         TESTINTAKEUP,
         TESTINTAKEDOWN,
         INTAKE,
-        OUTTAKE,
+        EJECT,
+        ARMOUTTAKE
 
     }
 
@@ -74,7 +75,8 @@ public class StateManager extends SubsystemBase {
                 elevator.setState(elevatorState.LEVELONEHEIGHT);
                 break;
             case LEVELTWOSCORE:
-                elevator.setState(elevatorState.LEVELTWOHEIGHT);
+                //elevator.setState(elevatorState.LEVELTWOHEIGHT);
+                arm.setRotState(armRotState.MIDPOS);
                 break;
             case LEVELTHREESCORE:
                 elevator.setState(elevatorState.LEVELTHREEHEIGHT);
@@ -96,9 +98,13 @@ public class StateManager extends SubsystemBase {
                 break;
             case INTAKE:
                 intake.setState(intakeState.INTAKE);
+                arm.setIntakeState(armOuttakeState.INTAKE);
                 break;
-            case OUTTAKE:
+            case EJECT:
                 intake.setState(intakeState.OUTTAKE);
+                break;
+            case ARMOUTTAKE:
+                arm.setIntakeState(armOuttakeState.OUTTAKE);
                 break;
 
         }

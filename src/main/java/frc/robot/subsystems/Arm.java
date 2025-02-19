@@ -37,13 +37,14 @@ public class Arm {
     public Arm() {
         rotMotor = new TalonFX(ArmConstants.armRotID);
         endEffectorMotor = new TalonFX(ArmConstants.armOuttakeID);
-        armEncoder = new CANcoder(ArmConstants.armCancoderID);
+        armEncoder = new CANcoder(ArmConstants.armCancoderID, "rio");
 
         currentOuttakeState = armOuttakeState.IDLE;
         currentRotState = armRotState.IDLE;
 
         CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
-        encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+        encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
+        encoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
         armEncoder.getConfigurator().apply(encoderConfig);
 
         final TalonFXConfiguration armPosConfigs = new TalonFXConfiguration();
@@ -51,7 +52,7 @@ public class Arm {
         armPosConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         armPosConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
 
-        armPosConfigs.Feedback.FeedbackRemoteSensorID = armEncoder.getDeviceID();
+        armPosConfigs.Feedback.FeedbackRemoteSensorID = ArmConstants.armCancoderID;
         armPosConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
 
         var pivotSlot0Configs = armPosConfigs.Slot0;
@@ -87,7 +88,7 @@ public class Arm {
     }
 
     public double getRot() {
-        return armEncoder.getPosition().getValueAsDouble();
+        return armEncoder.getAbsolutePosition().getValueAsDouble();
     }
 
     public void setRotState(armRotState state) {
@@ -105,7 +106,9 @@ public class Arm {
     public armRotState getIntakeState() {
         return currentRotState;
     }
-
+    public void restArmPos() {
+        armEncoder.setPosition(0);
+    }
     public void logging() {
         SmartDashboard.putNumber("Arm Pos", getRot());
         SmartDashboard.putNumber("Arm Speed", rotMotor.get());

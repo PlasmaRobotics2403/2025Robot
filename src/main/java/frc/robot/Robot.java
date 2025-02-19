@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     driver = new XboxController(0);
-    m_robotContainer = new RobotContainer(stateManager);
+    m_robotContainer = new RobotContainer(stateManager, driver);
   
   }
 
@@ -54,6 +54,7 @@ public class Robot extends TimedRobot {
     intake.periodic();
     elevator.periodic();
     arm.periodic();
+    arm.logging();
     stateManager.periodic();
     vision.update();
   }
@@ -106,19 +107,27 @@ public class Robot extends TimedRobot {
     else if(driver.getRightTriggerAxis() >= 0.3) {
       stateManager.setState(robotState.INTAKE);
     }
-    else if(driver.getXButton() == true) {
-      stateManager.setState(robotState.OUTTAKE);
-    }
     else if(driver.getAButton() == true) {
       stateManager.setState(robotState.LEVELONESCORE);
     }
-    else if(driver.getBButtonPressed()) {
-      stateManager.setState(robotState.TESTINTAKEDOWN);
+    else if(driver.getBButton() == true) {
+      stateManager.setState(robotState.LEVELTWOSCORE);
+    }
+    else if(driver.getXButton() == true) {
+      stateManager.setState(robotState.LEVELTHREESCORE);
+    }
+    else if(driver.getYButton() == true) {
+      stateManager.setState(robotState.LEVELFOURSCORE);
+    }
+    else if(driver.getRightBumperButton() == true) {
+      stateManager.setState(robotState.ARMOUTTAKE);
     }
     else {
       stateManager.setState(robotState.IDLE);
     }
-  
+    if(driver.getStartButton() == true) {
+      arm.restArmPos();
+    }
 
   }
 
