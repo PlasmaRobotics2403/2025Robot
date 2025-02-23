@@ -3,6 +3,10 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix6.controls.DutyCycleOut;
+import com.ctre.phoenix6.controls.MotionMagicVoltage;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -11,7 +15,7 @@ import frc.robot.Constants;
 import frc.robot.Constants.ClimbConstants;
 
 public class Climb{
-    private TalonSRX climbMotor;
+    private TalonFX climbMotor;
 
     public climbState currentState;
     public enum climbState{
@@ -21,13 +25,8 @@ public class Climb{
     }
 
     public Climb() {
-        climbMotor = new TalonSRX(ClimbConstants.CLIMB_MOTOR_ID);
-        climbMotor.setNeutralMode(NeutralMode.Brake);
-
-        climbMotor.config_kF(Constants.ClimbConstants.PID_IDX, Constants.ClimbConstants.kF, Constants.TIMEOUT_MS);
-        climbMotor.config_kP(Constants.ClimbConstants.PID_IDX, Constants.ClimbConstants.kP, Constants.TIMEOUT_MS);
-        climbMotor.config_kI(Constants.ClimbConstants.PID_IDX, Constants.ClimbConstants.kI, Constants.TIMEOUT_MS);
-        climbMotor.config_kD(Constants.ClimbConstants.PID_IDX, Constants.ClimbConstants.kD, Constants.TIMEOUT_MS);
+        climbMotor = new TalonFX(ClimbConstants.CLIMB_MOTOR_ID);
+        climbMotor.setNeutralMode(NeutralModeValue.Brake);
 
         currentState = climbState.IDLE;
 
@@ -41,11 +40,8 @@ public class Climb{
         return currentState;
     }
     public void runClimb(double speed) {
-        climbMotor.set(ControlMode.PercentOutput, speed);
-    }
-
-    public void magicClimb(double pos) {
-        climbMotor.set(ControlMode.MotionMagic, pos);
+        DutyCycleOut intakeRequest = new DutyCycleOut(0.0);
+        climbMotor.setControl(intakeRequest.withOutput(speed));
     }
 
     public void periodic() {
@@ -59,8 +55,6 @@ public class Climb{
             case CLIMBDOWN:
                 runClimb(-ClimbConstants.CLIMB_SPEED);
                 break;
-            default:
-                setState(climbState.IDLE);
         }
     }
 }

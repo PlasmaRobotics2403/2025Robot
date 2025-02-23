@@ -102,13 +102,13 @@ public class Robot extends TimedRobot {
     }
     else if(driver.getPOV() == 180) {
       stateManager.setState(robotState.CLIMBDOWN);
-      DriverStation.reportWarning("Climb!!!!!!!!!!!", true);
     }
     else if(driver.getRightTriggerAxis() >= 0.3) {
       stateManager.setState(robotState.INTAKE);
     }
     else if(driver.getAButton() == true) {
-      stateManager.setState(robotState.LEVELONESCORE);
+      //stateManager.setState(robotState.LEVELONESCORE);
+      stateManager.setState(robotState.TESTELEVATOR);
     }
     else if(driver.getBButton() == true) {
       stateManager.setState(robotState.LEVELTWOSCORE);

@@ -22,6 +22,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,6 +33,7 @@ public class Intake {
     public TalonFX intakeMotor;
     public TalonFX rotMotor;
     public TalonSRX indexMotor;
+    public DigitalInput indexSensor;
 
     public intakeState currentState;
     
@@ -47,8 +49,9 @@ public class Intake {
         intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, "rio");
         rotMotor = new TalonFX(IntakeConstants.ROT_MOTOR_ID, "rio");
         indexMotor = new TalonSRX(IntakeConstants.INDEX_MOTOR_ID);
-        currentState = intakeState.IDLE;
+        indexSensor = new DigitalInput(0);
 
+        currentState = intakeState.IDLE;
         indexMotor.setNeutralMode(NeutralMode.Coast);
         final TalonFXConfiguration intakeConfigs = new TalonFXConfiguration();
         intakeConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
@@ -85,7 +88,6 @@ public class Intake {
         currentConfigs.CurrentLimits.StatorCurrentLimit = 40;
         currentConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
 
-
     }
     public void runIntake(double speed) {
         DutyCycleOut intakeRequest = new DutyCycleOut(0.0);
@@ -105,7 +107,9 @@ public class Intake {
     public double getRotPosition() {
         return rotMotor.getRotorPosition().getValueAsDouble();
     }
-
+    public boolean getIndexSensor() {
+        return !indexSensor.get();
+    }
     public void setState(intakeState state) {
         currentState = state;
     }
@@ -116,7 +120,7 @@ public class Intake {
 
     public void log() {
         SmartDashboard.putNumber("Intake Rot Pos", getRotPosition());
-        
+        SmartDashboard.putBoolean("IntakeSensor", getIndexSensor());
     }
 
     public void periodic() {

@@ -10,6 +10,7 @@ import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
+import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ArmConstants;
@@ -45,6 +46,8 @@ public class Arm {
         CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
         encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         encoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
+        encoderConfig.MagnetSensor.MagnetOffset = 0.03;
+        
         armEncoder.getConfigurator().apply(encoderConfig);
 
         final TalonFXConfiguration armPosConfigs = new TalonFXConfiguration();
@@ -65,11 +68,12 @@ public class Arm {
         pivotSlot0Configs.kP = ArmConstants.armPosKP;
         pivotSlot0Configs.kD = ArmConstants.armPosKD;
         pivotSlot0Configs.kA = ArmConstants.armPosKA;
+        pivotSlot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
         
         var pivotMotionMagicConfigs = armPosConfigs.MotionMagic;
-        pivotMotionMagicConfigs.MotionMagicCruiseVelocity = ArmConstants.armPosVel;    //rps
-        pivotMotionMagicConfigs.MotionMagicAcceleration = ArmConstants.armPosAccel;    //rps/s
-        pivotMotionMagicConfigs.MotionMagicJerk = ArmConstants.armPosJerk;          //rps/s/s
+        pivotMotionMagicConfigs.MotionMagicCruiseVelocity = ArmConstants.armPosVel*ArmConstants.armGearRatio;    //rps
+        pivotMotionMagicConfigs.MotionMagicAcceleration = ArmConstants.armPosAccel*ArmConstants.armGearRatio;    //rps/s
+        //pivotMotionMagicConfigs.MotionMagicJerk = ArmConstants.armPosJerk;          //rps/s/s
 
        
 
@@ -82,11 +86,21 @@ public class Arm {
         DutyCycleOut armRequest = new DutyCycleOut(0.0);
         endEffectorMotor.setControl(armRequest.withOutput(speed));
     }
+
     public void rotArm(double pos) {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+        SmartDashboard.putNumber("Arm Commanded Pos", pos);
+
+    
         rotMotor.setControl(m_request.withPosition(pos));
     }
+    public void rotArmBackward(double pos) {
+        final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+        m_request.LimitForwardMotion = true;
+        rotMotor.setControl(m_request.withPosition(pos));
+        SmartDashboard.putNumber("Arm Commanded Pos", pos);
 
+    }
     public double getRot() {
         return armEncoder.getAbsolutePosition().getValueAsDouble();
     }
@@ -137,10 +151,10 @@ public class Arm {
                 rotArm(ArmConstants.armLowPos);
                 break;
             case MIDPOS:
-                rotArm(ArmConstants.armMidPos);
+                rotArmBackward(ArmConstants.armMidPos);
                 break;
             case HIGHPOS:
-                rotArm(ArmConstants.armHighPos);
+                rotArmBackward(ArmConstants.armHighPos);
                 break;
 
         }

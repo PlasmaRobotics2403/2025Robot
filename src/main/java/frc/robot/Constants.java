@@ -33,6 +33,8 @@ public class Constants {
         public static final double INTAKE_SPEED = 0.5;
         public static final double INDEX_SPEED = 0.6;
 
+        public static final double INTAKE_WAIT_TIME = 0.14;
+
         //Positions
         public static final double INTAKE_UP_POS = 0;
         public static final double INTAKE_DOWN_POS = 0;
@@ -63,13 +65,15 @@ public class Constants {
     public class ElevatorConstants {
         public static final int ELEVATOR_MOTOR_ONE_ID = 4;
         public static final int ELEVATOR_MOTOR_TWO_ID = 8;
+        public static final int ELEVATOR_LIMIT_SWITCH_ID = 1;
 
         // Elevator Poses
-        public static final double LEVEL1_HEIGHT = 70;
-        public static final double LEVEL2_HEIGHT = 20;
-        public static final double LEVEL3_HEIGHT = 40;
-        public static final double LEVEL4_HEIGHT = 70;
-        public static final double FEEDER_HEIGHT = 0;
+        public static final double ARM_THRESHHOLD = 19.4;
+        public static final double LEVEL1_HEIGHT = 20;
+        public static final double LEVEL2_HEIGHT = 24.5;
+        public static final double LEVEL3_HEIGHT = 60;
+        public static final double LEVEL4_HEIGHT = 96;
+        public static final double FEEDER_HEIGHT = 50;
 
 
         public static final double elevatorPosKS = 0.25;
@@ -88,23 +92,24 @@ public class Constants {
         public static final int armOuttakeID = 6;
         public static final int armCancoderID = 1;
         public static final double armRunSpeed = 0.3;
+        public static final double armGearRatio = 52.820625;
 
         public static final double armPosKS = 0.25;
-        public static final double armPosKV = 0.3;
+        public static final double armPosKV = 0.12;
         public static final double armPosKA = 0.01;
-        public static final double armPosKP = 5.0;
-        public static final double armPosKD = 0;
+        public static final double armPosKP = 22;
+        public static final double armPosKD = 0.2;
 
         // Arm Poses
-        public static final double armStowedPos = 0;
-        public static final double armLowPos = 0;
+        public static final double armStowedPos = 0.1;
+        public static final double armLowPos = 0.4;
         public static final double armMidPos = 0.5;
         public static final double armHighPos = 0;
         public static final double armFeedPos = 0;
 
-        public static final double armPosVel = 180;
-        public static final double armPosAccel = 360;
-        public static final double armPosJerk = 2000;
+        public static final double armPosVel = 0.3;
+        public static final double armPosAccel = 0.5;
+        public static final double armPosJerk = 1600;
         
     }
     public class ClimbConstants {
