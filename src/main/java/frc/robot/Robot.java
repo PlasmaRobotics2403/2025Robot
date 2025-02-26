@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.lib.controllers.PlasmaJoystick;
+import frc.robot.StateManager.armState;
 import frc.robot.StateManager.robotState;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Elevator;
@@ -27,6 +28,7 @@ import frc.robot.subsystems.Vision.robotSideState;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.armOuttakeState;
+import frc.robot.subsystems.Arm.armRotState;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -39,11 +41,12 @@ public class Robot extends TimedRobot {
   Elevator elevator = new Elevator();
   Arm arm = new Arm();
   StateManager stateManager = new StateManager(climb, intake, elevator, arm);
+  boolean isIntakeing = false;
   
 
   public Robot() {
     driver = new XboxController(0);
-    m_robotContainer = new RobotContainer(stateManager, driver);
+    m_robotContainer = new RobotContainer(stateManager);
   
   }
 
@@ -105,10 +108,11 @@ public class Robot extends TimedRobot {
     }
     else if(driver.getRightTriggerAxis() >= 0.3) {
       stateManager.setState(robotState.INTAKE);
+      stateManager.setArmState(armState.INTAKE);
+      isIntakeing = true;
     }
     else if(driver.getAButton() == true) {
-      //stateManager.setState(robotState.LEVELONESCORE);
-      stateManager.setState(robotState.TESTELEVATOR);
+      stateManager.setState(robotState.LEVELONESCORE);
     }
     else if(driver.getBButton() == true) {
       stateManager.setState(robotState.LEVELTWOSCORE);
@@ -119,16 +123,22 @@ public class Robot extends TimedRobot {
     else if(driver.getYButton() == true) {
       stateManager.setState(robotState.LEVELFOURSCORE);
     }
-    else if(driver.getRightBumperButton() == true) {
-      stateManager.setState(robotState.ARMOUTTAKE);
+
+    else if(driver.getLeftTriggerAxis() >= 0.3) {
+      m_robotContainer.setCreeping(0.3);
     }
     else {
       stateManager.setState(robotState.IDLE);
-    }
-    if(driver.getStartButton() == true) {
-      arm.restArmPos();
-    }
+      stateManager.setArmState(armState.IDLE);
+      isIntakeing = false;
+      m_robotContainer.setCreeping(1);
 
+    }
+    if(driver.getRightBumperButton() == true) {
+      stateManager.setArmState(armState.RUNNINGOUT);
+    } else if(isIntakeing == false){
+      stateManager.setArmState(armState.IDLE);
+    }
   }
 
   @Override

@@ -20,6 +20,8 @@ public class Arm {
     private TalonFX endEffectorMotor;
     private CANcoder armEncoder;
 
+    private boolean limitState;
+
     public armOuttakeState currentOuttakeState;
     public enum armOuttakeState {
         IDLE,
@@ -57,6 +59,8 @@ public class Arm {
 
         armPosConfigs.Feedback.FeedbackRemoteSensorID = ArmConstants.armCancoderID;
         armPosConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
+        
+        
 
         var pivotSlot0Configs = armPosConfigs.Slot0;
 
@@ -96,10 +100,12 @@ public class Arm {
     }
     public void rotArmBackward(double pos) {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-        m_request.LimitForwardMotion = true;
-        rotMotor.setControl(m_request.withPosition(pos));
+        rotMotor.setControl(m_request.withPosition(pos).withLimitForwardMotion(limitState).withLimitReverseMotion(false));
         SmartDashboard.putNumber("Arm Commanded Pos", pos);
 
+    }
+    public void setLimitMotion(boolean input) {
+        limitState = input;
     }
     public double getRot() {
         return armEncoder.getAbsolutePosition().getValueAsDouble();
@@ -126,6 +132,7 @@ public class Arm {
     public void logging() {
         SmartDashboard.putNumber("Arm Pos", getRot());
         SmartDashboard.putNumber("Arm Speed", rotMotor.get());
+        SmartDashboard.putBoolean("Intake Virtual Limit Switch", limitState);
     }
     public void periodic() {
         logging();

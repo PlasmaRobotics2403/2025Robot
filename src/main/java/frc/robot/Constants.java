@@ -33,7 +33,7 @@ public class Constants {
         public static final double INTAKE_SPEED = 0.5;
         public static final double INDEX_SPEED = 0.6;
 
-        public static final double INTAKE_WAIT_TIME = 0.14;
+        public static final double INTAKE_WAIT_TIME = 0.16;
 
         //Positions
         public static final double INTAKE_UP_POS = 0;
@@ -70,7 +70,7 @@ public class Constants {
         // Elevator Poses
         public static final double ARM_THRESHHOLD = 19.4;
         public static final double LEVEL1_HEIGHT = 20;
-        public static final double LEVEL2_HEIGHT = 24.5;
+        public static final double LEVEL2_HEIGHT = 16;
         public static final double LEVEL3_HEIGHT = 60;
         public static final double LEVEL4_HEIGHT = 96;
         public static final double FEEDER_HEIGHT = 50;
@@ -103,7 +103,7 @@ public class Constants {
         // Arm Poses
         public static final double armStowedPos = 0.1;
         public static final double armLowPos = 0.4;
-        public static final double armMidPos = 0.5;
+        public static final double armMidPos = -0.5;
         public static final double armHighPos = 0;
         public static final double armFeedPos = 0;
 
