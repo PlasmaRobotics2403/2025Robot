@@ -19,20 +19,15 @@ public class AutoRoutines {
 
     public AutoRoutine simplePathAuto() {
         final AutoRoutine routine = m_factory.newRoutine("SimplePath Auto");
-        final AutoTrajectory simplePath = routine.trajectory("SimplePath");
+        final AutoTrajectory simplePath = routine.trajectory("TestAuto");
     
         routine.active().onTrue(
-            simplePath.resetOdometry()
-                .andThen(simplePath.cmd())
-                .andThen(stateManager.setStateCommand(robotState.IDLE))
+            simplePath.cmd()
+            // simplePath.resetOdometry()
+            //     .andThen(simplePath.cmd())
         );
         
         return routine;
     }
-    public AutoRoutine testAuto() {
-        final AutoRoutine routine = m_factory.newRoutine("Test Auto");
-        //routine.active().onTrue(stateManager.setStateCommand(null));
 
-        return routine;
-    }  
 }

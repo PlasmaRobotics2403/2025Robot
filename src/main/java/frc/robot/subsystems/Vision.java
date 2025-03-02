@@ -12,27 +12,34 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Constants.VisionConstants;
 
 public class Vision {
 
-    private PIDController xController;
-    private PIDController yController;
+    private double wantedX = 0;
+    private double wantedY = 0;
+    private int currentTag = 0;
+    private double flipped = 1;
     public enum robotSideState {
         LEFT,
-        RIGHT
+        RIGHT,
+        IDLE
     }
-    public robotSideState currentState = robotSideState.LEFT;
-    public PIDController movementXController;
-    public PIDController movementYController;
+    public robotSideState currentState = robotSideState.IDLE;
+    public PIDController movementXController = new PIDController(1, 0, 0);
+    public PIDController movementYController = new PIDController(1, 0, 0);
+    private Rotation3d rotation = new Rotation3d();
 
     private Transform3d robotTransform3d = new Transform3d();
-    private Pose3d robotPose = new Pose3d();
+    private Pose3d robotPose = new Pose3d(0, 0, 0, rotation);
     PhotonCamera camera;
     public Vision() {
-        xController = new PIDController(0, 0, 0);
-        yController = new PIDController(0, 0, 0);
-
+        //movementXController = new PIDController(0.3, 0, 0);
+        //movementYController = new PIDController(0.3, 0, 0);
+        DriverStation.reportWarning("INITIALLIZE!!!!!!!!!", false);
+       
         camera = new PhotonCamera("Plasma Cam");
         if (camera.getLatestResult() != null) {
         
@@ -48,19 +55,20 @@ public class Vision {
         }
   
     }
-    public double moveRobotPoseX(double wantedPos) {
+
+    public double moveRobotPoseX() {
+        double currentX = robotPose.getX();
         if(robotPose.getX() != 0) {
-            return movementXController.calculate(robotPose.getX() - wantedPos);
-        }
-        else {
+            return movementXController.calculate(currentX, wantedX) * flipped;
+        } else {
             return 0;
         }
     }
-    public double moveRobotPoseY(double wantedPos) {
+
+    public double moveRobotPoseY() {
         if(robotPose.getY() != 0) {
-            return movementYController.calculate(robotPose.getY() - wantedPos);
-        }
-        else {
+            return movementYController.calculate(robotPose.getY(), wantedY) * flipped;
+        } else {
             return 0;
         }
     }
@@ -68,6 +76,12 @@ public class Vision {
         SmartDashboard.putNumber("RobotPoseX", robotPose.getX());
         SmartDashboard.putNumber("RobotPoseY", robotPose.getY());
         SmartDashboard.putNumber("Robot Yaw", robotPose.getRotation().getZ());
+        SmartDashboard.putNumber("Wanted X", wantedX);
+        SmartDashboard.putNumber("Wanted Y", wantedY);
+        SmartDashboard.putNumber("Vision PID X", moveRobotPoseX());
+        SmartDashboard.putNumber("Vision PID Y", moveRobotPoseY());
+
+        SmartDashboard.putNumber("Current TAG", currentTag);
     }
     
     public void setRobotSide(robotSideState state) {
@@ -84,22 +98,33 @@ public class Vision {
 
         switch (currentState) {
             case LEFT:
-
+                wantedX = VisionConstants.TargetLeftXPos;
+                wantedY = VisionConstants.TargetLeftYPos;
+                flipped = -1;
                 break;
             case RIGHT:
-                
+                wantedX = VisionConstants.TargetRightXPos;
+                wantedY = VisionConstants.TargetRightYPos;
+                flipped = -1;
+                break;
+            case IDLE:
+                wantedX = 0;
+                wantedY = 0;
+                flipped = -1;
                 break;
         }
         if (camera.getLatestResult() != null) {
         
             var result = camera.getLatestResult();
-        
-            if(result.getBestTarget() != null){
+            if(result.getBestTarget() != null) {
+                currentTag = result.getBestTarget().getFiducialId();
                 PhotonTrackedTarget target = result.getBestTarget();
                 AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
                 if (aprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
                     robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), aprilTagFieldLayout.getTagPose(target.getFiducialId()).get(), robotTransform3d);
                 }
+            } else {
+                currentTag = 0;
             }
         }
     }

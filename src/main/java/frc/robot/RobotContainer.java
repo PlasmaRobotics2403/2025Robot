@@ -22,6 +22,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -48,10 +49,16 @@ public class RobotContainer {
     private final AutoRoutines autoRoutines;
     private final AutoChooser autoChooser = new AutoChooser();
     private StateManager stateManager;
+    private Vision vision;
     public double isCreep = 1;
+    public double driveXOutput = 0;
+    public double driveYOutput = 0;
+    public double driveTurnOutput = 0;
+    public boolean isAutoAligning = false;
 
-    public RobotContainer(StateManager stateManager) {
+    public RobotContainer(StateManager stateManager, Vision vision) {
         this.stateManager = stateManager;
+        this.vision = vision;
         autoFactory = drivetrain.createAutoFactory();
         autoRoutines = new AutoRoutines(autoFactory, stateManager);
 
@@ -61,18 +68,31 @@ public class RobotContainer {
         configureBindings();
     }
 
-    private void configureBindings() {
+    public void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-
-            drivetrain.setDefaultCommand(
+        if(isAutoAligning()) {
+            DriverStation.reportWarning("AutoAligning", false);
+            driveXOutput = -vision.moveRobotPoseX() * MaxSpeed;
+            driveYOutput = -vision.moveRobotPoseY() * MaxSpeed;
+            driveTurnOutput = -joystick.getRightX() * MaxAngularRate;
+            
+        }
+        else{
+            driveXOutput = -joystick.getLeftY() * MaxSpeed * isCreep;
+            driveYOutput = -joystick.getLeftX() * MaxSpeed * isCreep;
+            driveTurnOutput = -joystick.getRightX() * MaxAngularRate * isCreep;
+            
+        }
+        drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
                 drivetrain.applyRequest(() ->
-                    drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * isCreep) // Drive forward with negative Y (forward)
-                        .withVelocityY(-joystick.getLeftX() * MaxSpeed * isCreep) // Drive left with negative X (left)
-                        .withRotationalRate(-joystick.getRightX() * MaxAngularRate * isCreep) // Drive counterclockwise with negative X (left)
+                    drive.withVelocityX(driveXOutput) // Drive forward with negative Y (forward)
+                        .withVelocityY(driveYOutput) // Drive left with negative X (left)
+                        .withRotationalRate(driveTurnOutput) // Drive counterclockwise with negative X (left)
                 )
             );
+            
         joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
         drivetrain.registerTelemetry(logger::telemeterize);
     }
@@ -84,5 +104,11 @@ public class RobotContainer {
 
     public void setCreeping(double speed) {
         isCreep = speed;
+    }
+    public boolean isAutoAligning() {
+        return isAutoAligning;
+    }
+    public void setAutoAligning(boolean value) {
+        isAutoAligning = value;
     }
 }

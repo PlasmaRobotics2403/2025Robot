@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.simulation.BatterySim;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -46,7 +47,7 @@ public class Robot extends TimedRobot {
 
   public Robot() {
     driver = new XboxController(0);
-    m_robotContainer = new RobotContainer(stateManager);
+    m_robotContainer = new RobotContainer(stateManager, vision);
   
   }
 
@@ -60,6 +61,8 @@ public class Robot extends TimedRobot {
     arm.logging();
     stateManager.periodic();
     vision.update();
+    m_robotContainer.configureBindings();
+    SmartDashboard.putBoolean("IsAutoAligning", m_robotContainer.isAutoAligning());
   }
 
   @Override
@@ -100,9 +103,6 @@ public class Robot extends TimedRobot {
       stateManager.setState(robotState.CLIMBUP);
       DriverStation.reportWarning("Climb!!!!!!!!!!!", true);
     } 
-    else if(driver.getPOV() == 90) {
-      stateManager.setState(robotState.LEVELONESCORE);
-    }
     else if(driver.getPOV() == 180) {
       stateManager.setState(robotState.CLIMBDOWN);
     }
@@ -123,16 +123,25 @@ public class Robot extends TimedRobot {
     else if(driver.getYButton() == true) {
       stateManager.setState(robotState.LEVELFOURSCORE);
     }
-
-    else if(driver.getLeftTriggerAxis() >= 0.3) {
-      m_robotContainer.setCreeping(0.3);
-    }
     else {
       stateManager.setState(robotState.IDLE);
       stateManager.setArmState(armState.IDLE);
       isIntakeing = false;
       m_robotContainer.setCreeping(1);
 
+    }
+    if(driver.getPOV() == 270) {
+      vision.setRobotSide(robotSideState.LEFT);
+      m_robotContainer.setAutoAligning(true);
+    } else if(driver.getPOV() == 90) {
+      vision.setRobotSide(robotSideState.RIGHT);
+      m_robotContainer.setAutoAligning(true);
+    } else {
+      vision.setRobotSide(robotSideState.IDLE);
+      m_robotContainer.setAutoAligning(false);
+    }
+    if(driver.getLeftTriggerAxis() >= 0.3) {
+      m_robotContainer.setCreeping(0.3);
     }
     if(driver.getRightBumperButton() == true) {
       stateManager.setArmState(armState.RUNNINGOUT);

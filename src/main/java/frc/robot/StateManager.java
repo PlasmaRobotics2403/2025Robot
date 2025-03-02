@@ -1,5 +1,6 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -124,6 +125,7 @@ public class StateManager extends SubsystemBase {
                 elevator.setState(elevatorState.LEVELTHREEHEIGHT);
                 if(elevator.getElevatorPosition1() >= Constants.ElevatorConstants.ARM_THRESHHOLD) {
                     if(arm.getRot() >= Constants.ArmConstants.armMidPos - 1 && arm.getRot() <= Constants.ArmConstants.armMidPos + 1) {
+                        DriverStation.reportWarning("Arm IN POSITION", false);
                         arm.setLimitMotion(false);
                     } else {
                         arm.setLimitMotion(true);

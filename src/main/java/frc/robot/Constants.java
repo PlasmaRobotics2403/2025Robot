@@ -23,6 +23,12 @@ public class Constants {
         public static final AprilTagFieldLayout kTagLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
         public static final Matrix<N3, N1> kSingleTagStdDevs = VecBuilder.fill(4, 4, 8);
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
+
+
+        public static final double TargetLeftXPos = 1.72;
+        public static final double TargetLeftYPos = 0.101;
+        public static final double TargetRightXPos = 1.434;
+        public static final double TargetRightYPos = 0.27;
     }
 
     public static class IntakeConstants {
@@ -104,7 +110,7 @@ public class Constants {
         public static final double armStowedPos = 0.1;
         public static final double armLowPos = 0.4;
         public static final double armMidPos = -0.5;
-        public static final double armHighPos = 0;
+        public static final double armHighPos = -0.6;
         public static final double armFeedPos = 0;
 
         public static final double armPosVel = 0.3;
