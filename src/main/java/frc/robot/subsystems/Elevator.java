@@ -98,7 +98,6 @@ public class Elevator {
         elevatorMotor2.setControl(eDutyCycleOut.withOutput(elevatorMotor1.get()));
         elevatorMotor1.setControl(m_requestLeft.withPosition(pos));
 
-        DriverStation.reportWarning("ELEVATOR RUNNING", false);
         SmartDashboard.putNumber("Elevator2 Error", elevatorMotor2.getClosedLoopError().getValue());
         SmartDashboard.putNumber("Elevator1 Error", elevatorMotor1.getClosedLoopError().getValue());
 

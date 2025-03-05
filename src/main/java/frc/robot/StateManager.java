@@ -125,7 +125,6 @@ public class StateManager extends SubsystemBase {
                 elevator.setState(elevatorState.LEVELTHREEHEIGHT);
                 if(elevator.getElevatorPosition1() >= Constants.ElevatorConstants.ARM_THRESHHOLD) {
                     if(arm.getRot() >= Constants.ArmConstants.armMidPos - 1 && arm.getRot() <= Constants.ArmConstants.armMidPos + 1) {
-                        DriverStation.reportWarning("Arm IN POSITION", false);
                         arm.setLimitMotion(false);
                     } else {
                         arm.setLimitMotion(true);

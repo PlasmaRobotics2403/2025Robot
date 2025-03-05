@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Vision.robotSideState;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -55,6 +56,7 @@ public class RobotContainer {
     public double driveYOutput = 0;
     public double driveTurnOutput = 0;
     public boolean isAutoAligning = false;
+    public boolean isAngleAligning = false;
 
     public RobotContainer(StateManager stateManager, Vision vision) {
         this.stateManager = stateManager;
@@ -72,17 +74,14 @@ public class RobotContainer {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         if(isAutoAligning()) {
-            DriverStation.reportWarning("AutoAligning", false);
             driveXOutput = -vision.moveRobotPoseX() * MaxSpeed;
             driveYOutput = -vision.moveRobotPoseY() * MaxSpeed;
-            driveTurnOutput = -joystick.getRightX() * MaxAngularRate;
-            
+            driveTurnOutput = vision.moveRobotPoseSpin() * MaxAngularRate;
         }
         else{
             driveXOutput = -joystick.getLeftY() * MaxSpeed * isCreep;
             driveYOutput = -joystick.getLeftX() * MaxSpeed * isCreep;
             driveTurnOutput = -joystick.getRightX() * MaxAngularRate * isCreep;
-            
         }
         drivetrain.setDefaultCommand(
                 // Drivetrain will execute this command periodically
@@ -106,9 +105,17 @@ public class RobotContainer {
         isCreep = speed;
     }
     public boolean isAutoAligning() {
+
         return isAutoAligning;
     }
     public void setAutoAligning(boolean value) {
         isAutoAligning = value;
+    }
+    public boolean isAngleAligning() {
+        
+        return isAngleAligning;
+    }
+    public void setAngleAligning(boolean value) {
+        isAngleAligning = value;
     }
 }

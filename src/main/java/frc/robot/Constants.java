@@ -25,10 +25,11 @@ public class Constants {
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
 
-        public static final double TargetLeftXPos = 1.72;
-        public static final double TargetLeftYPos = 0.101;
+        public static final double TargetLeftXPos = 1.265;
+        public static final double TargetLeftYPos = -3.021;
         public static final double TargetRightXPos = 1.434;
         public static final double TargetRightYPos = 0.27;
+        public static final double TargetRot = 0;
     }
 
     public static class IntakeConstants {

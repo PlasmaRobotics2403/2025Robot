@@ -101,7 +101,6 @@ public class Robot extends TimedRobot {
 
     if(driver.getPOV() == 0) {
       stateManager.setState(robotState.CLIMBUP);
-      DriverStation.reportWarning("Climb!!!!!!!!!!!", true);
     } 
     else if(driver.getPOV() == 180) {
       stateManager.setState(robotState.CLIMBDOWN);
@@ -148,6 +147,9 @@ public class Robot extends TimedRobot {
     } else if(isIntakeing == false){
       stateManager.setArmState(armState.IDLE);
     }
+    if(driver.getStartButton() == true) {
+      vision.pigeon2.reset();
+   }
   }
 
   @Override
