@@ -11,10 +11,12 @@ import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
@@ -28,17 +30,23 @@ public class Vision {
     private int currentTag = 0;
     private double flipped = 1;
     public Pigeon2 pigeon2;
+
+    public boolean startedAutoAligning = false;
     public enum robotSideState {
         LEFT,
         RIGHT,
         IDLE
     }
     public robotSideState currentState = robotSideState.IDLE;
-    public PIDController movementXController = new PIDController(0.2, 0, 0);
-    public PIDController movementYController = new PIDController(0.1, 0, 0);
-    public PIDController movementSpinController = new PIDController(1, 0, 0);
-    private Rotation3d rotation = new Rotation3d();
+    private Constraints xConstraints = new Constraints(0.01, 1);
+    private Constraints yConstraints = new Constraints(0.01, 1);
+    private Constraints rotConstraints = new Constraints(2, 5);
+    public ProfiledPIDController xController = new ProfiledPIDController(0.10, 0, 0, xConstraints);
+    public ProfiledPIDController yController = new ProfiledPIDController(0.05, 0, 0, yConstraints);
+    public ProfiledPIDController spinController = new ProfiledPIDController(0.04, 0, 0, rotConstraints);
 
+    private Rotation3d rotation = new Rotation3d();
+    
     private Transform3d robotTransform3d = new Transform3d(0, 0, 0, rotation);
     private Pose3d robotPose = new Pose3d(0, 0, 0, rotation);
     PhotonCamera camera;
@@ -67,7 +75,7 @@ public class Vision {
 
     public double moveRobotPoseX() {
         if(getRobotX() != 0 && wantedX != 0) {
-            return movementXController.calculate(getRobotX(), wantedX) * flipped;
+            return xController.calculate(getRobotX(), wantedX) * flipped;
         } else {
             return 0;
         }
@@ -75,13 +83,13 @@ public class Vision {
 
     public double moveRobotPoseY() {
         if(getRobotY() != 0 && wantedY != 0) {
-            return movementYController.calculate(getRobotY(), wantedY) * flipped;
+            return yController.calculate(getRobotY(), wantedY) * flipped;
         } else {
             return 0;
         }
     }
     public double moveRobotPoseSpin() {
-        return movementSpinController.calculate(getYaw(), wantedRot);
+        return spinController.calculate(getYaw(), wantedRot);
     }
     public double getRobotX() {
         try {
@@ -114,7 +122,7 @@ public class Vision {
         SmartDashboard.putNumber("Wanted Y", wantedY);
         SmartDashboard.putNumber("Vision PID X", moveRobotPoseX());
         SmartDashboard.putNumber("Vision PID Y", moveRobotPoseY());
-        SmartDashboard.putNumber("Vision PID Rot", movementSpinController.getError());
+        SmartDashboard.putNumber("Vision PID Rot", moveRobotPoseSpin());
 
         SmartDashboard.putNumber("Current TAG", currentTag);
     }
@@ -127,20 +135,38 @@ public class Vision {
         return currentState;
     }
 
-    
+    public boolean isAutoAligning() {
+        return getYaw() >= (VisionConstants.TargetRot + 3) || getYaw() <= (VisionConstants.TargetRot - 3);
+    }
     public void update() {
         log();
-
         switch (currentState) {
             case LEFT:
-                wantedX = VisionConstants.TargetLeftXPos;
-                wantedY = VisionConstants.TargetLeftYPos;
+                if(!isAutoAligning()) {
+                    startedAutoAligning = true;
+                } 
+                if(startedAutoAligning) {
+                    wantedX = VisionConstants.TargetLeftXPos;
+                    wantedY = VisionConstants.TargetLeftYPos;
+                } else {
+                    wantedX = 0;
+                    wantedY = 0;
+                }
                 wantedRot = VisionConstants.TargetRot;
                 flipped = -1;
                 break;
             case RIGHT:
-                wantedX = VisionConstants.TargetRightXPos;
-                wantedY = VisionConstants.TargetRightYPos;
+                if(!isAutoAligning()) {
+                    startedAutoAligning = true;
+                } 
+                if(startedAutoAligning) {
+                    wantedX = VisionConstants.TargetRightXPos;
+                    wantedY = VisionConstants.TargetRightYPos;
+                }
+                else {
+                    wantedX = 0;
+                    wantedY = 0;
+                }
                 wantedRot = VisionConstants.TargetRot;
                 flipped = -1;
                 break;
@@ -149,6 +175,7 @@ public class Vision {
                 wantedY = 0;
                 wantedRot = 0;
                 flipped = -1;
+                startedAutoAligning = false;
                 break;
         }
         if (camera.getLatestResult() != null) {
