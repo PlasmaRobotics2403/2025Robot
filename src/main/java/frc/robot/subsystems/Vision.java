@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.Rotation;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.targeting.PhotonTrackedTarget;
@@ -14,10 +12,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.VisionConstants;
 
@@ -38,12 +34,10 @@ public class Vision {
         IDLE
     }
     public robotSideState currentState = robotSideState.IDLE;
-    private Constraints xConstraints = new Constraints(0.01, 1);
-    private Constraints yConstraints = new Constraints(0.01, 1);
-    private Constraints rotConstraints = new Constraints(2, 5);
-    public ProfiledPIDController xController = new ProfiledPIDController(0.10, 0, 0, xConstraints);
-    public ProfiledPIDController yController = new ProfiledPIDController(0.05, 0, 0, yConstraints);
-    public ProfiledPIDController spinController = new ProfiledPIDController(0.04, 0, 0, rotConstraints);
+
+    public PIDController xController = new PIDController(0.155, 0, 0, 0.02);
+    public PIDController yController = new PIDController(0.14, 0, 0.0015, 0.02);
+    public PIDController spinController = new PIDController(0.02, 0, 0, 0.02);
 
     private Rotation3d rotation = new Rotation3d();
     
@@ -53,6 +47,9 @@ public class Vision {
     public Vision() {
         //movementXController = new PIDController(0.3, 0, 0);
         //movementYController = new PIDController(0.3, 0, 0);
+        xController.setTolerance(0.5, 0.1);
+        yController.setTolerance(0.5, 0.1);
+
        pigeon2 = new Pigeon2(0, "swerve");
        pigeon2.reset();
         camera = new PhotonCamera("Plasma Cam");
@@ -123,6 +120,12 @@ public class Vision {
         SmartDashboard.putNumber("Vision PID X", moveRobotPoseX());
         SmartDashboard.putNumber("Vision PID Y", moveRobotPoseY());
         SmartDashboard.putNumber("Vision PID Rot", moveRobotPoseSpin());
+
+        SmartDashboard.putBoolean("Has Started Auto Aligning", startedAutoAligning);
+
+        SmartDashboard.putBoolean("X At Setpoint", xController.atSetpoint());
+        SmartDashboard.putBoolean("Y At Setpoint", yController.atSetpoint());
+
 
         SmartDashboard.putNumber("Current TAG", currentTag);
     }

@@ -25,8 +25,8 @@ public class Constants {
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
 
-        public static final double TargetLeftXPos = 1.265;
-        public static final double TargetLeftYPos = -3.021;
+        public static final double TargetLeftXPos = 4.55; //1.265
+        public static final double TargetLeftYPos = -0.899; //-3.021
         public static final double TargetRightXPos = 1.434;
         public static final double TargetRightYPos = 0.27;
         public static final double TargetRot = 0;
@@ -121,7 +121,7 @@ public class Constants {
     }
     public class ClimbConstants {
         public static final int CLIMB_MOTOR_ID = 0;
-        public static final double CLIMB_SPEED = 0.5;
+        public static final double CLIMB_SPEED = 0.2;
          
         public static final int PID_IDX = 1;
 

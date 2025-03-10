@@ -48,6 +48,7 @@ public class Robot extends TimedRobot {
   public Robot() {
     driver = new XboxController(0);
     m_robotContainer = new RobotContainer(stateManager, vision);
+    CommandScheduler.getInstance().registerSubsystem(stateManager);
   
   }
 
@@ -58,10 +59,7 @@ public class Robot extends TimedRobot {
     intake.periodic();
     elevator.periodic();
     arm.periodic();
-    arm.logging();
-    stateManager.periodic();
     vision.update();
-    m_robotContainer.configureBindings();
     SmartDashboard.putBoolean("IsAutoAligning", m_robotContainer.isAutoAligning());
   }
 
@@ -99,6 +97,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
 
+    m_robotContainer.configureBindings();
     if(driver.getPOV() == 0) {
       stateManager.setState(robotState.CLIMBUP);
     } 
@@ -150,6 +149,7 @@ public class Robot extends TimedRobot {
     if(driver.getStartButton() == true) {
       vision.pigeon2.reset();
    }
+      
   }
 
   @Override

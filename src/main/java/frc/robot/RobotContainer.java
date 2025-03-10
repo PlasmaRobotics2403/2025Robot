@@ -12,18 +12,13 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine.Direction;
-
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Vision;
-import frc.robot.subsystems.Vision.robotSideState;
 
 public class RobotContainer {
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -57,17 +52,28 @@ public class RobotContainer {
     public double driveTurnOutput = 0;
     public boolean isAutoAligning = false;
     public boolean isAngleAligning = false;
+    public Trigger startTrigger;
 
     public RobotContainer(StateManager stateManager, Vision vision) {
         this.stateManager = stateManager;
         this.vision = vision;
         autoFactory = drivetrain.createAutoFactory();
-        autoRoutines = new AutoRoutines(autoFactory, stateManager);
+        autoRoutines = new AutoRoutines(autoFactory, stateManager, drivetrain, vision);
 
+        startTrigger = joystick.start();
         autoChooser.addRoutine("SimplePath", autoRoutines::simplePathAuto);
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
+
         configureBindings();
+        drivetrain.setDefaultCommand(
+            // Drivetrain will execute this command periodically
+            drivetrain.applyRequest(() ->
+                drive.withVelocityX(driveXOutput) // Drive forward with negative Y (forward)
+                    .withVelocityY(driveYOutput) // Drive left with negative X (left)
+                    .withRotationalRate(driveTurnOutput) // Drive counterclockwise with negative X (left)
+            )
+        );
     }
 
     public void configureBindings() {
@@ -83,17 +89,10 @@ public class RobotContainer {
             driveYOutput = -joystick.getLeftX() * MaxSpeed * isCreep;
             driveTurnOutput = -joystick.getRightX() * MaxAngularRate * isCreep;
         }
-        drivetrain.setDefaultCommand(
-                // Drivetrain will execute this command periodically
-                drivetrain.applyRequest(() ->
-                    drive.withVelocityX(driveXOutput) // Drive forward with negative Y (forward)
-                        .withVelocityY(driveYOutput) // Drive left with negative X (left)
-                        .withRotationalRate(driveTurnOutput) // Drive counterclockwise with negative X (left)
-                )
-            );
-            
-        joystick.start().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
-        drivetrain.registerTelemetry(logger::telemeterize);
+        if(startTrigger.getAsBoolean()) {
+            drivetrain.seedFieldCentric();
+        }
+        //drivetrain.registerTelemetry(logger::telemeterize);
     }
 
     public Command getAutonomousCommand() {
