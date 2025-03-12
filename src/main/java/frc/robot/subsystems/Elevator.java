@@ -8,7 +8,6 @@ import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ElevatorConstants;
 
@@ -140,7 +139,9 @@ public class Elevator {
  
     public void periodic() {
         logging();
-
+        if(getLimitSitch()) {
+            setElevatorDown();
+        }
         switch (currentState) {
             case IDLE:
                 magicElevator(0);

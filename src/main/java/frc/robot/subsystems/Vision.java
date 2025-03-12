@@ -47,6 +47,7 @@ public class Vision {
     public Vision() {
         //movementXController = new PIDController(0.3, 0, 0);
         //movementYController = new PIDController(0.3, 0, 0);
+        spinController.enableContinuousInput(-180, 180);
         xController.setTolerance(0.5, 0.1);
         yController.setTolerance(0.5, 0.1);
 
@@ -110,7 +111,9 @@ public class Vision {
     public double getWantedYaw() {
         return wantedRot;
     }
-    
+    public int getApriltagNumber() {
+        return lastTarget.getFiducialId();
+    }
     public void log() {
         SmartDashboard.putNumber("RobotPoseX", getRobotX());
         SmartDashboard.putNumber("RobotPoseY", getRobotY());
@@ -138,51 +141,280 @@ public class Vision {
         return currentState;
     }
 
-    public boolean isAutoAligning() {
-        return getYaw() >= (VisionConstants.TargetRot + 3) || getYaw() <= (VisionConstants.TargetRot - 3);
+    public boolean isAutoRotating() {
+        return getYaw() >= (wantedRot + 3) || getYaw() <= (wantedRot - 3);
     }
     public void update() {
         log();
         switch (currentState) {
             case LEFT:
-                if(!isAutoAligning()) {
+                if(!isAutoRotating()) {
                     startedAutoAligning = true;
                 } 
-                if(startedAutoAligning) {
-                    wantedX = VisionConstants.TargetLeftXPos;
-                    wantedY = VisionConstants.TargetLeftYPos;
-                } else {
-                    wantedX = 0;
-                    wantedY = 0;
+
+                switch(getApriltagNumber()) {
+                    case 6:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 7:
+                        wantedRot = 180;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target7LeftXPos;
+                            wantedY = VisionConstants.Target7LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 8:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target8LeftXPos;
+                            wantedY = VisionConstants.Target8LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 9:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target9LeftXPos;
+                            wantedY = VisionConstants.Target9LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 10:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target10LeftXPos;
+                            wantedY = VisionConstants.Target10LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 11:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target11LeftXPos;
+                            wantedY = VisionConstants.Target11LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 17:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target17LeftXPos;
+                            wantedY = VisionConstants.Target17LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 18:
+                        wantedRot = 180;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target18LeftXPos;
+                            wantedY = VisionConstants.Target18LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 19:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target19LeftXPos;
+                            wantedY = VisionConstants.Target19LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 20:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target20LeftXPos;
+                            wantedY = VisionConstants.Target20LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 21:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target21LeftXPos;
+                            wantedY = VisionConstants.Target21LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 22:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target22LeftXPos;
+                            wantedY = VisionConstants.Target22LeftYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+
                 }
-                wantedRot = VisionConstants.TargetRot;
                 flipped = -1;
                 break;
             case RIGHT:
-                if(!isAutoAligning()) {
+                if(!isAutoRotating()) {
                     startedAutoAligning = true;
                 } 
-                if(startedAutoAligning) {
-                    wantedX = VisionConstants.TargetRightXPos;
-                    wantedY = VisionConstants.TargetRightYPos;
+                switch(getApriltagNumber()) {
+                    case 6:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 7:
+                        wantedRot = 180;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target7RightXPos;
+                            wantedY = VisionConstants.Target7RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 8:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target8RightXPos;
+                            wantedY = VisionConstants.Target8RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 9:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target9RightXPos;
+                            wantedY = VisionConstants.Target9RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 10:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target10RightXPos;
+                            wantedY = VisionConstants.Target10RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 11:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target11RightXPos;
+                            wantedY = VisionConstants.Target11RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 17:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target17RightXPos;
+                            wantedY = VisionConstants.Target17RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 18:
+                        wantedRot = 180;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target18RightXPos;
+                            wantedY = VisionConstants.Target18RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 19:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target19RightXPos;
+                            wantedY = VisionConstants.Target19RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 20:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target20RightXPos;
+                            wantedY = VisionConstants.Target20RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 21:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target21RightXPos;
+                            wantedY = VisionConstants.Target21RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
+                    case 22:
+                        wantedRot = 0;
+                        if(startedAutoAligning) {
+                            wantedX = VisionConstants.Target22RightXPos;
+                            wantedY = VisionConstants.Target22RightYPos;
+                        } else {
+                            wantedX = 0;
+                            wantedY = 0;
+                        }
+                        break;
                 }
-                else {
-                    wantedX = 0;
-                    wantedY = 0;
-                }
-                wantedRot = VisionConstants.TargetRot;
                 flipped = -1;
                 break;
             case IDLE:
                 wantedX = 0;
                 wantedY = 0;
-                wantedRot = 0;
+                wantedRot = getYaw();
+
                 flipped = -1;
                 startedAutoAligning = false;
                 break;
         }
         if (camera.getLatestResult() != null) {
-        
             var result = camera.getLatestResult();
             if(result.getBestTarget() != null) {
                 currentTag = result.getBestTarget().getFiducialId();

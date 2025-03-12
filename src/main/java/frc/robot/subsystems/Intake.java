@@ -3,28 +3,14 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
-import com.ctre.phoenix6.configs.Slot0Configs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
-import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.controls.DutyCycleOut;
-import com.ctre.phoenix6.controls.MotionMagicVelocityVoltage;
 import com.ctre.phoenix6.controls.MotionMagicVoltage;
-import com.ctre.phoenix6.controls.PositionVoltage;
-import com.ctre.phoenix6.controls.VoltageOut;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.servohub.ServoHub.ResetMode;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkBase;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.config.SparkMaxConfig;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DutyCycle;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.IntakeConstants;
 
@@ -46,21 +32,20 @@ public class Intake {
     }
 
     public Intake() {
-        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, "rio");
-        rotMotor = new TalonFX(IntakeConstants.ROT_MOTOR_ID, "rio");
+        intakeMotor = new TalonFX(IntakeConstants.INTAKE_MOTOR_ID, "swerve");
+        rotMotor = new TalonFX(IntakeConstants.ROT_MOTOR_ID, "swerve");
         indexMotor = new TalonSRX(IntakeConstants.INDEX_MOTOR_ID);
         indexSensor = new DigitalInput(0);
 
         currentState = intakeState.IDLE;
         indexMotor.setNeutralMode(NeutralMode.Coast);
         final TalonFXConfiguration intakeConfigs = new TalonFXConfiguration();
-        intakeConfigs.MotorOutput.Inverted = InvertedValue.Clockwise_Positive;
+        intakeConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
         rotMotor.getConfigurator().apply(intakeConfigs);
 
         // pivot motion magic configuration
         final TalonFXConfiguration intakeRotConfigs = new TalonFXConfiguration();
         var pivotSlot0Configs = intakeRotConfigs.Slot0;
-
         intakeRotConfigs.CurrentLimits.StatorCurrentLimit = 40;
         intakeRotConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         
@@ -97,8 +82,13 @@ public class Intake {
         indexMotor.set(ControlMode.PercentOutput, speed);
     }
     public void rotIntake(double pos) {
+        DutyCycleOut intakeRequest = new DutyCycleOut(0.0);
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-        rotMotor.setControl(m_request.withPosition(pos));
+        if(pos == 0 && getRotPosition() >= -0.4 && getRotPosition() <= 0.4) {
+            rotMotor.setControl(intakeRequest.withOutput(0));
+        } else {
+            rotMotor.setControl(m_request.withPosition(pos));
+        }
     }
 
     public void rotIntakePercent(double speed) {

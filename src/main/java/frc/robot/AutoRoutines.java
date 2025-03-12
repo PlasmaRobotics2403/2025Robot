@@ -9,6 +9,9 @@ import choreo.auto.AutoTrajectory;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Vision;
@@ -33,6 +36,7 @@ public class AutoRoutines {
         m_factory = factory;
         this.stateManager = stateManager;
         this.swerve = swerve;
+        this.vision = vision;
     }
 
     public AutoRoutine simplePathAuto() {
@@ -47,13 +51,27 @@ public class AutoRoutines {
         return routine;
     }
 
-    public AutoRoutine autoAlign() {
-        final AutoRoutine routine = m_factory.newRoutine("SimplePath Auto");
-        final AutoTrajectory simplePath = routine.trajectory("TestAuto");
-    
-        routine.active().onTrue(swerve.applyRequest(() -> drive.withVelocityX(0).
-                                                            withVelocityY(0).
-                                                            withRotationalRate(0)));
+public AutoRoutine autoAlignRoutine() {
+        final AutoRoutine routine = m_factory.newRoutine("Auto Align");
+
+        // Step 1: Align to target using vision
+        Command alignToTarget = new RunCommand(() -> {
+            double xOutput = vision.moveRobotPoseX();
+            double yOutput = vision.moveRobotPoseY();
+            double spinOutput = vision.moveRobotPoseSpin();
+
+            swerve.applyRequest(() -> drive.withVelocityX(xOutput).withVelocityY(yOutput).withRotationalRate(spinOutput));
+        });
+
+
+        routine.active().onTrue(
+            new SequentialCommandGroup(
+                alignToTarget.until(() -> Math.abs(vision.moveRobotPoseX()) < 2 &&
+                                          Math.abs(vision.moveRobotPoseY()) < 2 &&
+                                          Math.abs(vision.moveRobotPoseSpin()) < 3)
+            )
+        );
+
         return routine;
     }
 

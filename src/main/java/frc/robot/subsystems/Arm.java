@@ -1,6 +1,5 @@
 package frc.robot.subsystems;
 
-import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.DutyCycleOut;
@@ -8,6 +7,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.ctre.phoenix6.signals.StaticFeedforwardSignValue;
@@ -47,8 +47,8 @@ public class Arm {
 
         CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
         encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-        encoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 1;
-        encoderConfig.MagnetSensor.MagnetOffset = 0.03;
+        encoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
+        encoderConfig.MagnetSensor.MagnetOffset = -0.6;
         
         armEncoder.getConfigurator().apply(encoderConfig);
 
@@ -56,11 +56,10 @@ public class Arm {
         armPosConfigs.CurrentLimits.StatorCurrentLimit = 40;
         armPosConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
         armPosConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        armPosConfigs.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
 
         armPosConfigs.Feedback.FeedbackRemoteSensorID = ArmConstants.armCancoderID;
         armPosConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.RemoteCANcoder;
-        
-        
 
         var pivotSlot0Configs = armPosConfigs.Slot0;
 
@@ -72,6 +71,7 @@ public class Arm {
         pivotSlot0Configs.kP = ArmConstants.armPosKP;
         pivotSlot0Configs.kD = ArmConstants.armPosKD;
         pivotSlot0Configs.kA = ArmConstants.armPosKA;
+        pivotSlot0Configs.kG = ArmConstants.armPosKG;
         pivotSlot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
         
         var pivotMotionMagicConfigs = armPosConfigs.MotionMagic;
@@ -94,16 +94,35 @@ public class Arm {
     public void rotArm(double pos) {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
         SmartDashboard.putNumber("Arm Commanded Pos", pos);
+        DutyCycleOut armRequest = new DutyCycleOut(0.0);
 
-    
-        rotMotor.setControl(m_request.withPosition(pos));
+        if(getRot() >= pos - 0.01 && getRot() <= pos + 0.01) {
+            if (pos == ArmConstants.armStowedPos) {
+                rotMotor.setControl(armRequest.withOutput(0));
+            } else {
+                rotMotor.setControl(m_request.withPosition(getRot()));
+            }
+        } else {
+            rotMotor.setControl(m_request.withPosition(pos));
+        }
     }
     public void rotArmBackward(double pos) {
         final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-        rotMotor.setControl(m_request.withPosition(pos).withLimitForwardMotion(limitState).withLimitReverseMotion(false));
+        DutyCycleOut armRequest = new DutyCycleOut(0.0);
+
+        if(getRot() >= pos - 0.01 && getRot() <= pos + 0.01) {
+            if (pos == ArmConstants.armStowedPos) {
+                rotMotor.setControl(armRequest.withOutput(0));
+            } else {
+                rotMotor.setControl(m_request.withPosition(getRot()).withLimitForwardMotion(false).withLimitReverseMotion(false));
+            }
+        } else {
+            rotMotor.setControl(m_request.withPosition(pos).withLimitForwardMotion(limitState).withLimitReverseMotion(false));
+        }
         SmartDashboard.putNumber("Arm Commanded Pos", pos);
 
     }
+   
     public void setLimitMotion(boolean input) {
         limitState = input;
     }
