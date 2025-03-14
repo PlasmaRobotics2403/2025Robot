@@ -4,32 +4,19 @@
 
 package frc.robot;
 
-import org.photonvision.PhotonCamera;
-
-import com.ctre.phoenix6.swerve.jni.SwerveJNI.DriveState;
-
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.simulation.BatterySim;
-import edu.wpi.first.wpilibj.simulation.RoboRioSim;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
-import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
-import frc.lib.controllers.PlasmaJoystick;
 import frc.robot.StateManager.armState;
 import frc.robot.StateManager.robotState;
+import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.Climb.climbState;
-import frc.robot.subsystems.Intake.intakeState;
-import frc.robot.subsystems.Vision.robotSideState;
 import frc.robot.subsystems.Vision;
-import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Arm.armOuttakeState;
-import frc.robot.subsystems.Arm.armRotState;
+import frc.robot.subsystems.Vision.robotSideState;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -142,10 +129,11 @@ public class Robot extends TimedRobot {
       m_robotContainer.setCreeping(0.3);
     }
     if(driver.getRightBumperButton() == true) {
-      stateManager.setArmState(armState.RUNNINGOUT);
-    } else if(isIntakeing == false){
-      stateManager.setArmState(armState.IDLE);
+        stateManager.setArmState(armState.RUNNINGOUT);
+      } else if(isIntakeing == false){
+        stateManager.setArmState(armState.IDLE);
     }
+    
     if(driver.getStartButton() == true) {
       vision.pigeon2.reset();
    }

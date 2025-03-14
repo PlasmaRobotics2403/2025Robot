@@ -26,6 +26,8 @@ public class StateManager extends SubsystemBase {
     public robotState currentState;
     public armState currentArmState;
     public boolean armUp = false;
+    public boolean armLow = false;
+    public boolean hasCoral = false;
     public enum armState {
         IDLE,
         RUNNINGIN,
@@ -85,14 +87,17 @@ public class StateManager extends SubsystemBase {
 
     }
     public void logging() {
+        SmartDashboard.putString("Robot State", currentState.toString());
         SmartDashboard.putBoolean("Intake Timer Started", intakeTimer.isRunning());
     }
     public void periodic() {
         logging();
         switch(currentState) {
             case IDLE:
+                armLow = false;
                 climb.setState(climbState.IDLE);
                 intake.setState(intakeState.IDLE);
+                arm.setRotState(armRotState.IDLE);
                 
                 if(arm.getRot() <= 0.12 && arm.getRot() >= -0.12) {
                     if(!elevatorTimer.isRunning() && armUp == true) {
@@ -105,7 +110,6 @@ public class StateManager extends SubsystemBase {
                         elevatorTimer.reset();
                     }
                 }
-                arm.setRotState(armRotState.IDLE);
 
                 intakeTimer.reset();
                 intakeTimer.stop();
@@ -115,18 +119,19 @@ public class StateManager extends SubsystemBase {
                 }
                 break;
             case LEVELONESCORE:
+                armLow = true;
                 elevator.setState(elevatorState.LEVELONEHEIGHT);
                 arm.setRotState(armRotState.LOWPOS);
-                if(elevator.getElevatorPosition1() >= Constants.ElevatorConstants.ARM_THRESHHOLD) {
-                    armUp = true;
-                }
+                armUp = true;
+                
                 break;
             case LEVELTWOSCORE:
+                armLow = false;
                 elevator.setState(elevatorState.LEVELTWOHEIGHT);
 
                 if(elevator.getElevatorPosition1() >= Constants.ElevatorConstants.ARM_THRESHHOLD) {
                     armUp = true;
-                    if(arm.getRot() >= Constants.ArmConstants.armMidPos - 0.1 && arm.getRot() <= Constants.ArmConstants.armMidPos + 0.1) {
+                    if(arm.getRot() >= Constants.ArmConstants.armMidPos - 0.01 && arm.getRot() <= Constants.ArmConstants.armMidPos + 0.01) {
                         arm.setLimitMotion(false);
                     } else {
                         arm.setLimitMotion(true);
@@ -137,9 +142,10 @@ public class StateManager extends SubsystemBase {
                 }
                 break;
             case LEVELTHREESCORE:
+                armLow = false;
                 elevator.setState(elevatorState.LEVELTHREEHEIGHT);
                 if(elevator.getElevatorPosition1() >= Constants.ElevatorConstants.ARM_THRESHHOLD) {
-                    if(arm.getRot() >= Constants.ArmConstants.armMidPos - 0.1 && arm.getRot() <= Constants.ArmConstants.armMidPos + 0.1) {
+                    if(arm.getRot() >= Constants.ArmConstants.armMidPos - 0.01 && arm.getRot() <= Constants.ArmConstants.armMidPos + 0.01) {
                         arm.setLimitMotion(false);
                     } else {
                         arm.setLimitMotion(true);
@@ -152,9 +158,10 @@ public class StateManager extends SubsystemBase {
                 break;
             case LEVELFOURSCORE:
                 armUp = true;
+                armLow = false;
                 elevator.setState(elevatorState.LEVELFOURHEIGHT);
                 if(elevator.getElevatorPosition1() >= Constants.ElevatorConstants.ARM_THRESHHOLD) {
-                    if(arm.getRot() >= Constants.ArmConstants.armHighPos - 0.1 && arm.getRot() <= Constants.ArmConstants.armHighPos + 0.1) {
+                    if(arm.getRot() >= Constants.ArmConstants.armHighPos - 0.01 && arm.getRot() <= Constants.ArmConstants.armHighPos + 0.01) {
                         arm.setLimitMotion(false);
                     } else {
                         arm.setLimitMotion(true);
@@ -185,6 +192,10 @@ public class StateManager extends SubsystemBase {
                     intake.setState(intakeState.IDLE);
                 }
                 if(!intakeTimer.isRunning() && intake.getIndexSensor()) {
+                    hasCoral = true;
+                }
+                if(!intakeTimer.isRunning() && !intake.getIndexSensor() && hasCoral == true) {
+                    hasCoral = false;
                     intakeTimer.start();
                 }
                 break;
@@ -205,7 +216,11 @@ public class StateManager extends SubsystemBase {
                 arm.setIntakeState(armOuttakeState.INTAKE);
                 break;
             case RUNNINGOUT:
-                arm.setIntakeState(armOuttakeState.OUTTAKE);
+                if(armLow) {
+                    arm.setIntakeState(armOuttakeState.INTAKE);
+                } else {
+                    arm.setIntakeState(armOuttakeState.OUTTAKE);
+                }
                 break;
             case INTAKE:
                 if(intakeTimer.get() <= Constants.IntakeConstants.INTAKE_WAIT_TIME) {

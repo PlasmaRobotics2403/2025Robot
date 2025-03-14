@@ -23,28 +23,28 @@ public class Constants {
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
         /* - - - - - - - TARGET 6 POSES - - - - - - - - */
-        public static final double Target6LeftXPos = 1.265; 
-        public static final double Target6LeftYPos = -3.021; 
-        public static final double Target6RightXPos = 1.434;
-        public static final double Target6RightYPos = 0.27;
+        public static final double Target6LeftXPos = 0.86; 
+        public static final double Target6LeftYPos = -2.8; 
+        public static final double Target6RightXPos = 0.87;
+        public static final double Target6RightYPos = 0.37;
 
         /* - - - - - - - TARGET 7 POSES - - - - - - - - */
-        public static final double Target7LeftXPos = 1.265; 
+        public static final double Target7LeftXPos = 0.89; 
         public static final double Target7LeftYPos = -3.021; 
-        public static final double Target7RightXPos = 1.434;
-        public static final double Target7RightYPos = 0.27;
+        public static final double Target7RightXPos = 0.82;
+        public static final double Target7RightYPos = 0.17;
 
         /* - - - - - - - TARGET 8 POSES - - - - - - - - */
-        public static final double Target8LeftXPos = 1.265; 
-        public static final double Target8LeftYPos = -3.021; 
-        public static final double Target8RightXPos = 1.434;
-        public static final double Target8RightYPos = 0.27;
+        public static final double Target8LeftXPos = 0.86; 
+        public static final double Target8LeftYPos = -2.85; 
+        public static final double Target8RightXPos = 0.87;
+        public static final double Target8RightYPos = 0.12;
 
         /* - - - - - - - TARGET 9 POSES - - - - - - - - */
-        public static final double Target9LeftXPos = 1.265; 
-        public static final double Target9LeftYPos = -3.021; 
-        public static final double Target9RightXPos = 1.434;
-        public static final double Target9RightYPos = 0.27;
+        public static final double Target9LeftXPos = 0.86; 
+        public static final double Target9LeftYPos = -2.84; 
+        public static final double Target9RightXPos = 0.86;
+        public static final double Target9RightYPos = 0.65;
 
         /* - - - - - - - TARGET 10 POSES - - - - - - - - */
         public static final double Target10LeftXPos = 1.265; 
@@ -53,12 +53,13 @@ public class Constants {
         public static final double Target10RightYPos = 0.27;
 
         /* - - - - - - - TARGET 11 POSES - - - - - - - - */
-        public static final double Target11LeftXPos = 1.265; 
-        public static final double Target11LeftYPos = -3.021; 
-        public static final double Target11RightXPos = 1.434;
+        public static final double Target11LeftXPos = 0.86; 
+        public static final double Target11LeftYPos = -2.9; 
+        public static final double Target11RightXPos = 0.87;
         public static final double Target11RightYPos = 0.27;
 
         /* - - - - - - - TARGET 17 POSES - - - - - - - - */
+        
         public static final double Target17LeftXPos = 1.265; 
         public static final double Target17LeftYPos = -3.021; 
         public static final double Target17RightXPos = 1.434;
@@ -103,7 +104,7 @@ public class Constants {
         public static final double INTAKE_SPEED = 0.6;
         public static final double INDEX_SPEED = 0.6;
 
-        public static final double INTAKE_WAIT_TIME = 0.2;
+        public static final double INTAKE_WAIT_TIME = 0.01;
 
         //Positions
         public static final double INTAKE_UP_POS = 0;
@@ -138,21 +139,21 @@ public class Constants {
         public static final int ELEVATOR_LIMIT_SWITCH_ID = 1;
 
         // Elevator Poses
-        public static final double ARM_THRESHHOLD = 19.4;
-        public static final double LEVEL1_HEIGHT = 20;
-        public static final double LEVEL2_HEIGHT = 20;
-        public static final double LEVEL3_HEIGHT = 60;
-        public static final double LEVEL4_HEIGHT = 96;
+        public static final double ARM_THRESHHOLD = 24.2;
+        public static final double LEVEL1_HEIGHT = 34;
+        public static final double LEVEL2_HEIGHT = 34;
+        public static final double LEVEL3_HEIGHT = 47;
+        public static final double LEVEL4_HEIGHT = 110;
         public static final double FEEDER_HEIGHT = 50;
 
 
         public static final double elevatorPosKS = 0.25;
         public static final double elevatorPosKV = 0.12;
-        public static final double elevatorPosKP = 4;
+        public static final double elevatorPosKP = 6;
         public static final double elevatorPosKD = 0;
 
         public static final double elevatorPosVel = 100;
-        public static final double elevatorPosAccel = 200;
+        public static final double elevatorPosAccel = 300;
         public static final double elevatorPosJerk = 3600;
 
     }
@@ -161,21 +162,28 @@ public class Constants {
         public static final int armRotID = 5;
         public static final int armOuttakeID = 6;
         public static final int armCancoderID = 1;
-        public static final double armRunSpeed = 0.3;
+        public static final double armRunSpeed = 0.2;
         public static final double armGearRatio = 52.820625;
+        public static final double armGravityK = 1;
 
-        public static final double armPosKS = 0.25;
-        public static final double armPosKV = 0.12;
-        public static final double armPosKA = 0.1;
-        public static final double armPosKG = 1;
-        public static final double armPosKP = 20;
-        public static final double armPosKD = 0.1;
+        public static final double armPos0KS = 0.25;
+        public static final double armPos0KV = 0.12;
+        public static final double armPos0KA = 0.1;
+        public static final double armPos0KP = 28;
+        public static final double armPos0KD = 0.1;
+
+
+        public static final double armPos1KS = 0.25;
+        public static final double armPos1KV = 0.12;
+        public static final double armPos1KA = 0.1;
+        public static final double armPos1KP = 25;
+        public static final double armPos1KD = 0;
 
         // Arm Poses
-        public static final double armStowedPos = 0.1;
-        public static final double armLowPos = 0.4;
+        public static final double armStowedPos = 0.11;
+        public static final double armLowPos = 0.12;
         public static final double armMidPos = -0.5;
-        public static final double armHighPos = -0.53;
+        public static final double armHighPos = -0.5;
         public static final double armFeedPos = 0.1;
 
         public static final double armPosVel = 0.08;

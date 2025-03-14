@@ -12,6 +12,7 @@ import choreo.auto.AutoFactory;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
@@ -36,6 +37,7 @@ public class RobotContainer {
 
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
+    private final XboxController controller = new XboxController(0);
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final Swerve drivetrain = TunerConstants.createDrivetrain();
@@ -89,7 +91,7 @@ public class RobotContainer {
             driveYOutput = -joystick.getLeftX() * MaxSpeed * isCreep;
             driveTurnOutput = -joystick.getRightX() * MaxAngularRate * isCreep;
         }
-        if(startTrigger.getAsBoolean()) {
+        if(controller.getStartButton()) {
             drivetrain.seedFieldCentric();
         }
         //drivetrain.registerTelemetry(logger::telemeterize);

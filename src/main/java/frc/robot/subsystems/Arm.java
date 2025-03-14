@@ -21,6 +21,9 @@ public class Arm {
     private CANcoder armEncoder;
 
     private boolean limitState;
+    final MotionMagicVoltage rotArmRequest;
+    final MotionMagicVoltage rotArmBackwardRequest;
+
 
     public armOuttakeState currentOuttakeState;
     public enum armOuttakeState {
@@ -44,11 +47,13 @@ public class Arm {
 
         currentOuttakeState = armOuttakeState.IDLE;
         currentRotState = armRotState.IDLE;
+        rotArmRequest = new MotionMagicVoltage(0);
+        rotArmBackwardRequest = new MotionMagicVoltage(0);
 
         CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
         encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         encoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-        encoderConfig.MagnetSensor.MagnetOffset = -0.6;
+        encoderConfig.MagnetSensor.MagnetOffset = -0.5;
         
         armEncoder.getConfigurator().apply(encoderConfig);
 
@@ -66,12 +71,21 @@ public class Arm {
         armPosConfigs.CurrentLimits.StatorCurrentLimit = 40;
         armPosConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
 
-        pivotSlot0Configs.kS = ArmConstants.armPosKS;
-        pivotSlot0Configs.kV = ArmConstants.armPosKV;
-        pivotSlot0Configs.kP = ArmConstants.armPosKP;
-        pivotSlot0Configs.kD = ArmConstants.armPosKD;
-        pivotSlot0Configs.kA = ArmConstants.armPosKA;
-        pivotSlot0Configs.kG = ArmConstants.armPosKG;
+        pivotSlot0Configs.kS = ArmConstants.armPos0KS;
+        pivotSlot0Configs.kV = ArmConstants.armPos0KV;
+        pivotSlot0Configs.kP = ArmConstants.armPos0KP;
+        pivotSlot0Configs.kD = ArmConstants.armPos0KD;
+        pivotSlot0Configs.kA = ArmConstants.armPos0KA;
+        
+        pivotSlot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
+
+        var pivotSlot1Configs = armPosConfigs.Slot1;
+        pivotSlot1Configs.kS = ArmConstants.armPos1KS;
+        pivotSlot1Configs.kV = ArmConstants.armPos1KV;
+        pivotSlot1Configs.kP = ArmConstants.armPos1KP;
+        pivotSlot1Configs.kD = ArmConstants.armPos1KD;
+        pivotSlot1Configs.kA = ArmConstants.armPos1KA;
+        
         pivotSlot0Configs.StaticFeedforwardSign = StaticFeedforwardSignValue.UseClosedLoopSign;
         
         var pivotMotionMagicConfigs = armPosConfigs.MotionMagic;
@@ -92,35 +106,21 @@ public class Arm {
     }
 
     public void rotArm(double pos) {
-        final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
+        rotArmRequest.Slot = 1;
+        double gravityAssist = ArmConstants.armGravityK * Math.sin(2*Math.PI*getRot());
         SmartDashboard.putNumber("Arm Commanded Pos", pos);
-        DutyCycleOut armRequest = new DutyCycleOut(0.0);
-
-        if(getRot() >= pos - 0.01 && getRot() <= pos + 0.01) {
-            if (pos == ArmConstants.armStowedPos) {
-                rotMotor.setControl(armRequest.withOutput(0));
-            } else {
-                rotMotor.setControl(m_request.withPosition(getRot()));
-            }
-        } else {
-            rotMotor.setControl(m_request.withPosition(pos));
-        }
+        rotMotor.setControl(rotArmRequest.withPosition(pos).withFeedForward(gravityAssist));
     }
     public void rotArmBackward(double pos) {
-        final MotionMagicVoltage m_request = new MotionMagicVoltage(0);
-        DutyCycleOut armRequest = new DutyCycleOut(0.0);
-
-        if(getRot() >= pos - 0.01 && getRot() <= pos + 0.01) {
-            if (pos == ArmConstants.armStowedPos) {
-                rotMotor.setControl(armRequest.withOutput(0));
-            } else {
-                rotMotor.setControl(m_request.withPosition(getRot()).withLimitForwardMotion(false).withLimitReverseMotion(false));
-            }
-        } else {
-            rotMotor.setControl(m_request.withPosition(pos).withLimitForwardMotion(limitState).withLimitReverseMotion(false));
-        }
+        rotArmBackwardRequest.Slot = 0;
+        double gravityAssist = ArmConstants.armGravityK * Math.sin(2*Math.PI*getRot());
+        rotMotor.setControl(rotArmBackwardRequest
+                .withPosition(pos)
+                .withLimitForwardMotion(limitState)
+                .withLimitReverseMotion(false)
+                .withFeedForward(gravityAssist));
+        //DriverStation.reportWarning("MOVING ARM", false);
         SmartDashboard.putNumber("Arm Commanded Pos", pos);
-
     }
    
     public void setLimitMotion(boolean input) {

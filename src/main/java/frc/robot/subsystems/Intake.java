@@ -120,17 +120,17 @@ public class Intake {
                 runIntake(0);
                 rotIntakePercent(0);
                 runIndex(0);
-                //rotIntake(IntakeConstants.INTAKE_UP_POS);
+                rotIntake(IntakeConstants.INTAKE_UP_POS);
                 break;
             case INTAKE:
                 runIntake(IntakeConstants.INTAKE_SPEED);
                 runIndex(IntakeConstants.INDEX_SPEED);
-                //rotIntake(IntakeConstants.INTAKE_DOWN_POS);
+                rotIntake(IntakeConstants.INTAKE_DOWN_POS);
                 break;
             case OUTTAKE:
                 runIntake(-IntakeConstants.INTAKE_SPEED);
                 runIndex(-IntakeConstants.INDEX_SPEED);
-                //rotIntake(IntakeConstants.INTAKE_DOWN_POS);
+                rotIntake(IntakeConstants.INTAKE_DOWN_POS);
                 break;
             case ROTUP:
                 rotIntakePercent(0.3);

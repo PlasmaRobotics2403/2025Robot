@@ -95,7 +95,11 @@ public class Elevator {
 
         //elevatorMotor1.setControl(eDutyCycleOut.withOutput(speed));
         elevatorMotor2.setControl(eDutyCycleOut.withOutput(elevatorMotor1.get()));
-        elevatorMotor1.setControl(m_requestLeft.withPosition(pos));
+        if(pos == 0 && getElevatorPosition1() <= 0.1 && getLimitSitch() == false) {
+            elevatorMotor1.set(-0.2);
+        } else {
+            elevatorMotor1.setControl(m_requestLeft.withPosition(pos));
+        }
 
         SmartDashboard.putNumber("Elevator2 Error", elevatorMotor2.getClosedLoopError().getValue());
         SmartDashboard.putNumber("Elevator1 Error", elevatorMotor1.getClosedLoopError().getValue());

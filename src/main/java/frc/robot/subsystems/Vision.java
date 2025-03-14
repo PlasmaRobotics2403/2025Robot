@@ -174,7 +174,7 @@ public class Vision {
                         }
                         break;
                     case 8:
-                        wantedRot = 0;
+                        wantedRot = -112;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target8LeftXPos;
                             wantedY = VisionConstants.Target8LeftYPos;
@@ -184,7 +184,7 @@ public class Vision {
                         }
                         break;
                     case 9:
-                        wantedRot = 0;
+                        wantedRot = 52.3;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target9LeftXPos;
                             wantedY = VisionConstants.Target9LeftYPos;
