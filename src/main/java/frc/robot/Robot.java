@@ -137,6 +137,9 @@ public class Robot extends TimedRobot {
     if(driver.getStartButton() == true) {
       vision.pigeon2.reset();
    }
+   if(driver.getStartButton()) {
+    m_robotContainer.drivetrain.seedFieldCentric();
+}
       
   }
 

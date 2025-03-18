@@ -46,6 +46,7 @@ public class AutoRoutines {
         routine.active().onTrue(
             simplePath.resetOdometry()
                  .andThen(simplePath.cmd())
+                 
         );
         
         return routine;

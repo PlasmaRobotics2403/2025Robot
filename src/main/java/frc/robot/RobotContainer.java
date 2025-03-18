@@ -82,20 +82,35 @@ public class RobotContainer {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
         if(isAutoAligning()) {
-            driveXOutput = -vision.moveRobotPoseX() * MaxSpeed;
-            driveYOutput = -vision.moveRobotPoseY() * MaxSpeed;
-            driveTurnOutput = vision.moveRobotPoseSpin() * MaxAngularRate;
+            if(vision.moveRobotPoseX() > 0.3) {
+                driveXOutput = 0.3 *MaxSpeed;
+            } else if(vision.moveRobotPoseX() < -0.3) {
+                driveXOutput = -0.3 * MaxSpeed;
+            } else {
+                driveXOutput = vision.moveRobotPoseX() * MaxSpeed;
+            }
+            if(vision.moveRobotPoseY() > 0.2) {
+                driveYOutput = 0.2 * MaxSpeed;
+            } else if(vision.moveRobotPoseY() < -0.2) {
+                driveYOutput = -0.2 * MaxSpeed;
+            } else {
+                driveYOutput = vision.moveRobotPoseY() * MaxSpeed;
+            }
+            if(vision.moveRobotPoseSpin() > 0.3) {
+                driveTurnOutput = 0.3 * MaxAngularRate;
+            } else if(vision.moveRobotPoseSpin() < -0.3) {
+                driveTurnOutput = -0.3 * MaxAngularRate;
+            } else {
+                driveTurnOutput = vision.moveRobotPoseSpin() * MaxAngularRate;
+            }
         }
         else{
             driveXOutput = -joystick.getLeftY() * MaxSpeed * isCreep;
             driveYOutput = -joystick.getLeftX() * MaxSpeed * isCreep;
             driveTurnOutput = -joystick.getRightX() * MaxAngularRate * isCreep;
         }
-        if(controller.getStartButton()) {
-            drivetrain.seedFieldCentric();
-        }
         //drivetrain.registerTelemetry(logger::telemeterize);
-    }
+    } 
 
     public Command getAutonomousCommand() {
         /* Run the routine selected from the auto chooser */

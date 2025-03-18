@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
+import org.photonvision.proto.Photon;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
@@ -35,9 +36,9 @@ public class Vision {
     }
     public robotSideState currentState = robotSideState.IDLE;
 
-    public PIDController xController = new PIDController(0.155, 0, 0, 0.02);
-    public PIDController yController = new PIDController(0.14, 0, 0.0015, 0.02);
-    public PIDController spinController = new PIDController(0.02, 0, 0, 0.02);
+    public PIDController xController = new PIDController(0.16, 0, 0, 0.02);
+    public PIDController yController = new PIDController(0.15, 0, 0.0001, 0.02);
+    public PIDController spinController = new PIDController(0.05, 0, 0.001, 0.02);
 
     private Rotation3d rotation = new Rotation3d();
     
@@ -63,7 +64,6 @@ public class Vision {
                 lastTarget = target;
                 AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
                 if (aprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
-
                     robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), aprilTagFieldLayout.getTagPose(target.getFiducialId()).get(), robotTransform3d);
                 }
             }
@@ -118,6 +118,8 @@ public class Vision {
         SmartDashboard.putNumber("RobotPoseX", getRobotX());
         SmartDashboard.putNumber("RobotPoseY", getRobotY());
         SmartDashboard.putNumber("Robot Yaw", getYaw());
+
+        SmartDashboard.putNumber("Wanted Rot", wantedRot);
         SmartDashboard.putNumber("Wanted X", wantedX);
         SmartDashboard.putNumber("Wanted Y", wantedY);
         SmartDashboard.putNumber("Vision PID X", moveRobotPoseX());
@@ -125,12 +127,13 @@ public class Vision {
         SmartDashboard.putNumber("Vision PID Rot", moveRobotPoseSpin());
 
         SmartDashboard.putBoolean("Has Started Auto Aligning", startedAutoAligning);
+        SmartDashboard.putBoolean("Is Auto Rotating", isAutoRotating());
 
         SmartDashboard.putBoolean("X At Setpoint", xController.atSetpoint());
         SmartDashboard.putBoolean("Y At Setpoint", yController.atSetpoint());
 
 
-        SmartDashboard.putNumber("Current TAG", currentTag);
+        SmartDashboard.putNumber("Current TAG", getApriltagNumber());
     }
     
     public void setRobotSide(robotSideState state) {
@@ -142,7 +145,7 @@ public class Vision {
     }
 
     public boolean isAutoRotating() {
-        return getYaw() >= (wantedRot + 3) || getYaw() <= (wantedRot - 3);
+        return getYaw() >= (wantedRot + 2) || getYaw() <= (wantedRot - 2);
     }
     public void update() {
         log();
@@ -154,7 +157,7 @@ public class Vision {
 
                 switch(getApriltagNumber()) {
                     case 6:
-                        wantedRot = 0;
+                        wantedRot = 120;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target6LeftXPos;
                             wantedY = VisionConstants.Target6LeftYPos;
@@ -174,7 +177,7 @@ public class Vision {
                         }
                         break;
                     case 8:
-                        wantedRot = -112;
+                        wantedRot = -120;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target8LeftXPos;
                             wantedY = VisionConstants.Target8LeftYPos;
@@ -184,7 +187,7 @@ public class Vision {
                         }
                         break;
                     case 9:
-                        wantedRot = 52.3;
+                        wantedRot = -60;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target9LeftXPos;
                             wantedY = VisionConstants.Target9LeftYPos;
@@ -204,7 +207,7 @@ public class Vision {
                         }
                         break;
                     case 11:
-                        wantedRot = 0;
+                        wantedRot = 60;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target11LeftXPos;
                             wantedY = VisionConstants.Target11LeftYPos;
@@ -214,7 +217,7 @@ public class Vision {
                         }
                         break;
                     case 17:
-                        wantedRot = 0;
+                        wantedRot = -120;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target17LeftXPos;
                             wantedY = VisionConstants.Target17LeftYPos;
@@ -234,7 +237,7 @@ public class Vision {
                         }
                         break;
                     case 19:
-                        wantedRot = 0;
+                        wantedRot = 120;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target19LeftXPos;
                             wantedY = VisionConstants.Target19LeftYPos;
@@ -244,7 +247,7 @@ public class Vision {
                         }
                         break;
                     case 20:
-                        wantedRot = 0;
+                        wantedRot = 60;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target20LeftXPos;
                             wantedY = VisionConstants.Target20LeftYPos;
@@ -264,7 +267,7 @@ public class Vision {
                         }
                         break;
                     case 22:
-                        wantedRot = 0;
+                        wantedRot = -60;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target22LeftXPos;
                             wantedY = VisionConstants.Target22LeftYPos;
@@ -275,7 +278,7 @@ public class Vision {
                         break;
 
                 }
-                flipped = -1;
+                flipped = 1;
                 break;
             case RIGHT:
                 if(!isAutoRotating()) {
@@ -283,7 +286,7 @@ public class Vision {
                 } 
                 switch(getApriltagNumber()) {
                     case 6:
-                        wantedRot = 0;
+                        wantedRot = 120;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target6RightXPos;
                             wantedY = VisionConstants.Target6RightYPos;
@@ -303,7 +306,7 @@ public class Vision {
                         }
                         break;
                     case 8:
-                        wantedRot = 0;
+                        wantedRot = -120;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target8RightXPos;
                             wantedY = VisionConstants.Target8RightYPos;
@@ -313,7 +316,7 @@ public class Vision {
                         }
                         break;
                     case 9:
-                        wantedRot = 0;
+                        wantedRot = -60;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target9RightXPos;
                             wantedY = VisionConstants.Target9RightYPos;
@@ -333,7 +336,7 @@ public class Vision {
                         }
                         break;
                     case 11:
-                        wantedRot = 0;
+                        wantedRot = 60;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target11RightXPos;
                             wantedY = VisionConstants.Target11RightYPos;
@@ -343,7 +346,7 @@ public class Vision {
                         }
                         break;
                     case 17:
-                        wantedRot = 0;
+                        wantedRot = -120;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target17RightXPos;
                             wantedY = VisionConstants.Target17RightYPos;
@@ -363,7 +366,7 @@ public class Vision {
                         }
                         break;
                     case 19:
-                        wantedRot = 0;
+                        wantedRot = 120;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target19RightXPos;
                             wantedY = VisionConstants.Target19RightYPos;
@@ -373,7 +376,7 @@ public class Vision {
                         }
                         break;
                     case 20:
-                        wantedRot = 0;
+                        wantedRot = 60;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target20RightXPos;
                             wantedY = VisionConstants.Target20RightYPos;
@@ -393,7 +396,7 @@ public class Vision {
                         }
                         break;
                     case 22:
-                        wantedRot = 0;
+                        wantedRot = -60;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target22RightXPos;
                             wantedY = VisionConstants.Target22RightYPos;
@@ -403,12 +406,12 @@ public class Vision {
                         }
                         break;
                 }
-                flipped = -1;
+                flipped = 1;
                 break;
             case IDLE:
                 wantedX = 0;
                 wantedY = 0;
-                wantedRot = getYaw();
+                //wantedRot = getYaw();
 
                 flipped = -1;
                 startedAutoAligning = false;

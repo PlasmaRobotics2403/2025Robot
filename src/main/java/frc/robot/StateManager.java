@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.StateManager.levelTwoStates;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.armOuttakeState;
 import frc.robot.subsystems.Arm.armRotState;
@@ -28,6 +29,13 @@ public class StateManager extends SubsystemBase {
     public boolean armUp = false;
     public boolean armLow = false;
     public boolean hasCoral = false;
+    public levelTwoStates currentLevelTwoState;
+    public enum levelTwoStates {
+        IDLE,
+        GOINGUP,
+        PLACING,
+        RETURNING
+    }
     public enum armState {
         IDLE,
         RUNNINGIN,
@@ -57,6 +65,8 @@ public class StateManager extends SubsystemBase {
         elevatorTimer = new Timer();
         currentState = robotState.IDLE;
         currentArmState = armState.IDLE;
+        currentLevelTwoState = levelTwoStates.IDLE;
+
         this.climb = climb;
         this.intake = intake;
         this.elevator = elevator;
@@ -86,6 +96,7 @@ public class StateManager extends SubsystemBase {
             });
 
     }
+
     public void logging() {
         SmartDashboard.putString("Robot State", currentState.toString());
         SmartDashboard.putBoolean("Intake Timer Started", intakeTimer.isRunning());
@@ -99,16 +110,18 @@ public class StateManager extends SubsystemBase {
                 intake.setState(intakeState.IDLE);
                 arm.setRotState(armRotState.IDLE);
                 
-                if(arm.getRot() <= 0.12 && arm.getRot() >= -0.12) {
+                if(arm.getRot() <= 0.28 && arm.getRot() >= 0.23) {
                     if(!elevatorTimer.isRunning() && armUp == true) {
                         elevatorTimer.start();
                     }
-                    if(elevatorTimer.get() >= 0.5) {
+                    if(elevatorTimer.get() >= 0) {
                         elevator.setState(elevatorState.IDLE);
                         armUp = false;
                         elevatorTimer.stop();
                         elevatorTimer.reset();
                     }
+                } else {
+                    elevator.setState(elevatorState.IDLEHIGH);
                 }
 
                 intakeTimer.reset();
@@ -128,18 +141,19 @@ public class StateManager extends SubsystemBase {
             case LEVELTWOSCORE:
                 armLow = false;
                 elevator.setState(elevatorState.LEVELTWOHEIGHT);
-
+                arm.setRotState(armRotState.MIDPOS);
+                /*
                 if(elevator.getElevatorPosition1() >= Constants.ElevatorConstants.ARM_THRESHHOLD) {
                     armUp = true;
                     if(arm.getRot() >= Constants.ArmConstants.armMidPos - 0.01 && arm.getRot() <= Constants.ArmConstants.armMidPos + 0.01) {
-                        arm.setLimitMotion(false);
+                        arm.setLimitMotion(false); 
                     } else {
                         arm.setLimitMotion(true);
                     }
                     arm.setRotState(armRotState.MIDPOS);
                 } else {
                     arm.setLimitMotion(false);
-                }
+                }*/ 
                 break;
             case LEVELTHREESCORE:
                 armLow = false;
@@ -151,7 +165,7 @@ public class StateManager extends SubsystemBase {
                         arm.setLimitMotion(true);
                     }
                     armUp = true;
-                    arm.setRotState(armRotState.MIDPOS);
+                    arm.setRotState(armRotState.LEVELTHREE);
                 } else {
                     arm.setLimitMotion(false);
                 }

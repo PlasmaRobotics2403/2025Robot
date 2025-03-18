@@ -10,6 +10,7 @@ import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.subsystems.Elevator.elevatorState;
 
 public class Elevator {
     
@@ -17,10 +18,15 @@ public class Elevator {
     private TalonFX elevatorMotor2;
     private DigitalInput elevatorLimitSwitch;
 
+    private boolean needToGoUp = false;
+
     public elevatorState currentState;
     public enum elevatorState {
+        IDLEHIGH,
         LEVELONEHEIGHT,
         LEVELTWOHEIGHT,
+        LEVELTWOHEIGHTUP,
+        LEVELTWOHEIGHTNORMAL,
         LEVELTHREEHEIGHT,
         LEVELFOURHEIGHT,
         FEEDER,
@@ -133,12 +139,14 @@ public class Elevator {
         elevatorMotor2.setPosition(0);
 
     }
+    
     public void logging() {
         SmartDashboard.putNumber("Elevator Position1", getElevatorPosition1());
         SmartDashboard.putNumber("Elevator Position2", getElevatorPosition2());
 
         SmartDashboard.putNumber("Elevator Speed", elevatorMotor1.get());
         SmartDashboard.putBoolean("Elevator Limit Switch", getLimitSitch());
+        SmartDashboard.putString("ElevatorState", getState().toString());
     }
  
     public void periodic() {
@@ -148,13 +156,27 @@ public class Elevator {
         }
         switch (currentState) {
             case IDLE:
-                magicElevator(0);
+                if(needToGoUp) {
+                    magicElevator(ElevatorConstants.LEVEL2_HEIGHT_HIGH);
+                    if(getElevatorPosition1() >= ElevatorConstants.LEVEL2_HEIGHT_HIGH -1) {
+                        needToGoUp = false;
+                    }
+                } else {
+                    magicElevator(0);
+                }
                 break;
             case LEVELONEHEIGHT:
                 magicElevator(ElevatorConstants.LEVEL1_HEIGHT);
                 break;
+            case LEVELTWOHEIGHTUP:
+                magicElevator(ElevatorConstants.LEVEL2_HEIGHT_HIGH);
+                if(getElevatorPosition1() >= ElevatorConstants.LEVEL2_HEIGHT_HIGH -1) {
+                    setState(elevatorState.LEVELTWOHEIGHT);
+                }
+                break;
             case LEVELTWOHEIGHT:
-                magicElevator(ElevatorConstants.LEVEL2_HEIGHT);
+                needToGoUp = false;
+                magicElevator(ElevatorConstants.LEVEL2_HEIGHT); 
                 break;
             case LEVELTHREEHEIGHT:
                 magicElevator(ElevatorConstants.LEVEL3_HEIGHT);
@@ -164,6 +186,9 @@ public class Elevator {
                 break;
             case FEEDER:
                 magicElevator(ElevatorConstants.FEEDER_HEIGHT);
+                break;
+            case IDLEHIGH:
+                magicElevator(ElevatorConstants.LEVEL2_HEIGHT_HIGH);
                 break;
             case TEST:
                 runElevator(0.25);

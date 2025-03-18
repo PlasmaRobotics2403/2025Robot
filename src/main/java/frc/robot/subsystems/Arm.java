@@ -19,11 +19,9 @@ public class Arm {
     private TalonFX rotMotor;
     private TalonFX endEffectorMotor;
     private CANcoder armEncoder;
-
     private boolean limitState;
     final MotionMagicVoltage rotArmRequest;
     final MotionMagicVoltage rotArmBackwardRequest;
-
 
     public armOuttakeState currentOuttakeState;
     public enum armOuttakeState {
@@ -38,9 +36,11 @@ public class Arm {
         FEEDPOS,
         LOWPOS,
         MIDPOS,
-        HIGHPOS
+        LEVELTHREE,
+        HIGHPOS,
     }
     public Arm() {
+
         rotMotor = new TalonFX(ArmConstants.armRotID);
         endEffectorMotor = new TalonFX(ArmConstants.armOuttakeID);
         armEncoder = new CANcoder(ArmConstants.armCancoderID, "rio");
@@ -53,7 +53,7 @@ public class Arm {
         CANcoderConfiguration encoderConfig = new CANcoderConfiguration();
         encoderConfig.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
         encoderConfig.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.5;
-        encoderConfig.MagnetSensor.MagnetOffset = -0.5;
+        encoderConfig.MagnetSensor.MagnetOffset = 0.54;
         
         armEncoder.getConfigurator().apply(encoderConfig);
 
@@ -107,16 +107,16 @@ public class Arm {
 
     public void rotArm(double pos) {
         rotArmRequest.Slot = 1;
-        double gravityAssist = ArmConstants.armGravityK * Math.sin(2*Math.PI*getRot());
+        double gravityAssist = ArmConstants.armGravityK * Math.sin(2*Math.PI*(getRot()-0.25));
         SmartDashboard.putNumber("Arm Commanded Pos", pos);
         rotMotor.setControl(rotArmRequest.withPosition(pos).withFeedForward(gravityAssist));
     }
     public void rotArmBackward(double pos) {
         rotArmBackwardRequest.Slot = 0;
-        double gravityAssist = ArmConstants.armGravityK * Math.sin(2*Math.PI*getRot());
+        double gravityAssist = ArmConstants.armGravityK * Math.sin(2*Math.PI*(getRot()-0.25));
         rotMotor.setControl(rotArmBackwardRequest
                 .withPosition(pos)
-                .withLimitForwardMotion(limitState)
+                .withLimitForwardMotion(limitState)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
                 .withLimitReverseMotion(false)
                 .withFeedForward(gravityAssist));
         //DriverStation.reportWarning("MOVING ARM", false);
@@ -177,6 +177,9 @@ public class Arm {
                 rotArm(ArmConstants.armLowPos);
                 break;
             case MIDPOS:
+                rotArm(ArmConstants.armMidPosForward);
+                break;
+            case LEVELTHREE:
                 rotArmBackward(ArmConstants.armMidPos);
                 break;
             case HIGHPOS:
