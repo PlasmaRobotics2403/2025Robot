@@ -96,6 +96,13 @@ public class StateManager extends SubsystemBase {
             });
 
     }
+    public Command setArmStateCommand(armState state) {
+        return runOnce(
+            () -> {
+                setArmState(state);
+            });
+
+    }
 
     public void logging() {
         SmartDashboard.putString("Robot State", currentState.toString());

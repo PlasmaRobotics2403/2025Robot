@@ -37,7 +37,7 @@ public class Vision {
     public robotSideState currentState = robotSideState.IDLE;
 
     public PIDController xController = new PIDController(0.16, 0, 0, 0.02);
-    public PIDController yController = new PIDController(0.15, 0, 0.0001, 0.02);
+    public PIDController yController = new PIDController(0.166, 0, 0.0002, 0.02);
     public PIDController spinController = new PIDController(0.05, 0, 0.001, 0.02);
 
     private Rotation3d rotation = new Rotation3d();
@@ -72,7 +72,7 @@ public class Vision {
     }
 
     public double moveRobotPoseX() {
-        if(getRobotX() != 0 && wantedX != 0) {
+        if(getRobotX() != 0 && wantedX != 0 && currentTag != 0) {
             return xController.calculate(getRobotX(), wantedX) * flipped;
         } else {
             return 0;
@@ -80,7 +80,7 @@ public class Vision {
     }
 
     public double moveRobotPoseY() {
-        if(getRobotY() != 0 && wantedY != 0) {
+        if(getRobotY() != 0 && wantedY != 0 && currentTag != 0) {
             return yController.calculate(getRobotY(), wantedY) * flipped;
         } else {
             return 0;
@@ -112,7 +112,7 @@ public class Vision {
         return wantedRot;
     }
     public int getApriltagNumber() {
-        return lastTarget.getFiducialId();
+        return currentTag;
     }
     public void log() {
         SmartDashboard.putNumber("RobotPoseX", getRobotX());

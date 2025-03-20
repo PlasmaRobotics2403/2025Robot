@@ -9,16 +9,22 @@ import choreo.auto.AutoTrajectory;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.StateManager.armState;
+import frc.robot.StateManager.robotState;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.Swerve;
 import frc.robot.subsystems.Vision;
+import frc.robot.subsystems.Vision.robotSideState;
 
-public class AutoRoutines {
+public class AutoRoutines extends SubsystemBase{
     private final AutoFactory m_factory;
     private StateManager stateManager;
+    private RobotContainer robotContainer;
     private Swerve swerve;
     private Vision vision;
     private double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -32,16 +38,30 @@ public class AutoRoutines {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.FieldCentric fieldCentric = new SwerveRequest.FieldCentric();
 
-    public AutoRoutines(AutoFactory factory, StateManager stateManager, Swerve swerve, Vision vision) {
+    public AutoRoutines(AutoFactory factory, StateManager stateManager, Swerve swerve, Vision vision, RobotContainer robotContainer) {
         m_factory = factory;
         this.stateManager = stateManager;
         this.swerve = swerve;
         this.vision = vision;
+        this.robotContainer = robotContainer;
     }
 
+    public Command autoAlignCommand() {
+        Command alignToTarget = new RunCommand(() -> {
+            vision.setRobotSide(robotSideState.RIGHT);
+            robotContainer.setAutoAligning(true);
+            robotContainer.configureBindings();
+            DriverStation.reportWarning("AUTOALIGNING", false);
+            // double xOutput = vision.moveRobotPoseX() * MaxSpeed;
+            // double yOutput = vision.moveRobotPoseY() * MaxSpeed;
+            // double spinOutput = vision.moveRobotPoseSpin() * MaxAngularRate;
+            // swerve.setDefaultCommand((swerve.applyRequest(() -> drive.withVelocityX(xOutput).withVelocityY(yOutput).withRotationalRate(spinOutput))));
+        });
+        return alignToTarget;
+    }
     public AutoRoutine simplePathAuto() {
         final AutoRoutine routine = m_factory.newRoutine("SimplePath Auto");
-        final AutoTrajectory simplePath = routine.trajectory("TestAuto");
+        final AutoTrajectory simplePath = routine.trajectory("AutoAlignPath");
     
         routine.active().onTrue(
             simplePath.resetOdometry()
@@ -51,25 +71,32 @@ public class AutoRoutines {
         
         return routine;
     }
-
+    public Command waitCommand(long delayMillis) {
+        return runOnce(
+            () -> {
+                try {
+                    Thread.sleep(delayMillis);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            });
+    }
 public AutoRoutine autoAlignRoutine() {
         final AutoRoutine routine = m_factory.newRoutine("Auto Align");
-
-        // Step 1: Align to target using vision
-        Command alignToTarget = new RunCommand(() -> {
-            double xOutput = vision.moveRobotPoseX();
-            double yOutput = vision.moveRobotPoseY();
-            double spinOutput = vision.moveRobotPoseSpin();
-
-            swerve.applyRequest(() -> drive.withVelocityX(xOutput).withVelocityY(yOutput).withRotationalRate(spinOutput));
-        });
-
+        final AutoTrajectory simplePath = routine.trajectory("AutoAlignPath");
 
         routine.active().onTrue(
             new SequentialCommandGroup(
-                alignToTarget.until(() -> Math.abs(vision.moveRobotPoseX()) < 2 &&
-                                          Math.abs(vision.moveRobotPoseY()) < 2 &&
-                                          Math.abs(vision.moveRobotPoseSpin()) < 3)
+                autoAlignCommand().withTimeout(5),
+                
+                stateManager.setStateCommand(robotState.LEVELONESCORE),
+                waitCommand(20000),
+                stateManager.setArmStateCommand(armState.RUNNINGIN),
+                waitCommand(20000),
+                stateManager.setArmStateCommand(armState.IDLE),
+                stateManager.setStateCommand(robotState.IDLE)
+
+                    
             )
         );
 

@@ -9,6 +9,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import choreo.auto.AutoChooser;
 import choreo.auto.AutoFactory;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -35,12 +36,16 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.FieldCentric fieldCentric = new SwerveRequest.FieldCentric();
 
+    public SwerveRequest.RobotCentric driveRobotReletave = new SwerveRequest.RobotCentric();
+
     private final Telemetry logger = new Telemetry(MaxSpeed);
 
     private final XboxController controller = new XboxController(0);
     private final CommandXboxController joystick = new CommandXboxController(0);
 
     public final Swerve drivetrain = TunerConstants.createDrivetrain();
+
+    public ChassisSpeeds robotSpeeds = new ChassisSpeeds();
 
     /* Path follower */
     private final AutoFactory autoFactory;
@@ -52,6 +57,8 @@ public class RobotContainer {
     public double driveXOutput = 0;
     public double driveYOutput = 0;
     public double driveTurnOutput = 0;
+    public double driveXOutputRobot = 0;
+    public double driveYOutputRobot = 0;
     public boolean isAutoAligning = false;
     public boolean isAngleAligning = false;
     public Trigger startTrigger;
@@ -60,7 +67,7 @@ public class RobotContainer {
         this.stateManager = stateManager;
         this.vision = vision;
         autoFactory = drivetrain.createAutoFactory();
-        autoRoutines = new AutoRoutines(autoFactory, stateManager, drivetrain, vision);
+        autoRoutines = new AutoRoutines(autoFactory, stateManager, drivetrain, vision, this);
 
         startTrigger = joystick.start();
         autoChooser.addRoutine("SimplePath", autoRoutines::simplePathAuto);
@@ -76,25 +83,39 @@ public class RobotContainer {
                     .withRotationalRate(driveTurnOutput) // Drive counterclockwise with negative X (left)
             )
         );
+
     }
 
     public void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
+
+        //driveXOutputRobot = Math.cos(Math.toRadians(vision.getYaw())) * vision.moveRobotPoseX() - Math.sin(Math.toRadians(vision.getYaw())) * vision.moveRobotPoseY();
+        //driveYOutputRobot = Math.sin(Math.toRadians(vision.getYaw())) * vision.moveRobotPoseX() + Math.cos(Math.toRadians(vision.getYaw())) * vision.moveRobotPoseY();
+        // robotSpeeds.vxMetersPerSecond = vision.moveRobotPoseX();
+        // robotSpeeds.vyMetersPerSecond = vision.moveRobotPoseY();
+        // robotSpeeds.omegaRadiansPerSecond =0;
+        // Rotation2d robotAngle = new Rotation2d(vision.getYaw());
+        // ChassisSpeeds fieldReletaveSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(robotSpeeds, robotAngle);
+        // driveXOutputRobot = fieldReletaveSpeeds.vxMetersPerSecond;
+        // driveYOutputRobot = fieldReletaveSpeeds.vyMetersPerSecond;
+        driveXOutputRobot = vision.moveRobotPoseX();
+        driveYOutputRobot = vision.moveRobotPoseY();
+
         if(isAutoAligning()) {
-            if(vision.moveRobotPoseX() > 0.3) {
+            if(driveXOutputRobot > 0.3) {
                 driveXOutput = 0.3 *MaxSpeed;
-            } else if(vision.moveRobotPoseX() < -0.3) {
+            } else if(driveXOutputRobot < -0.3) {
                 driveXOutput = -0.3 * MaxSpeed;
             } else {
-                driveXOutput = vision.moveRobotPoseX() * MaxSpeed;
+                driveXOutput = driveXOutputRobot * MaxSpeed;
             }
-            if(vision.moveRobotPoseY() > 0.2) {
+            if(driveYOutputRobot > 0.2) {
                 driveYOutput = 0.2 * MaxSpeed;
-            } else if(vision.moveRobotPoseY() < -0.2) {
+            } else if(driveYOutputRobot < -0.2) {
                 driveYOutput = -0.2 * MaxSpeed;
             } else {
-                driveYOutput = vision.moveRobotPoseY() * MaxSpeed;
+                driveYOutput = driveYOutputRobot * MaxSpeed;
             }
             if(vision.moveRobotPoseSpin() > 0.3) {
                 driveTurnOutput = 0.3 * MaxAngularRate;
@@ -109,8 +130,12 @@ public class RobotContainer {
             driveYOutput = -joystick.getLeftX() * MaxSpeed * isCreep;
             driveTurnOutput = -joystick.getRightX() * MaxAngularRate * isCreep;
         }
+        SmartDashboard.putNumber("RobotOutputX", driveXOutputRobot);
+        SmartDashboard.putNumber("RobotOutputY", driveYOutputRobot);
+
         //drivetrain.registerTelemetry(logger::telemeterize);
     } 
+    
 
     public Command getAutonomousCommand() {
         /* Run the routine selected from the auto chooser */
