@@ -36,9 +36,9 @@ public class Vision {
     }
     public robotSideState currentState = robotSideState.IDLE;
 
-    public PIDController xController = new PIDController(0.16, 0, 0, 0.02);
-    public PIDController yController = new PIDController(0.166, 0, 0.0002, 0.02);
-    public PIDController spinController = new PIDController(0.05, 0, 0.001, 0.02);
+    public PIDController xController = new PIDController(0.14, 0, 0, 0.02); // 0.16
+    public PIDController yController = new PIDController(0.08, 0, 0.001, 0.02);// 0.166
+    public PIDController spinController = new PIDController(0.03, 0, 0.001, 0.02);// 0.05
 
     private Rotation3d rotation = new Rotation3d();
     

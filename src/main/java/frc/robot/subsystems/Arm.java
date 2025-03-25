@@ -28,6 +28,7 @@ public class Arm {
         IDLE,
         INTAKE,
         OUTTAKE,
+        SCORELOW,
         ALGAE
     }
 
@@ -162,10 +163,13 @@ public class Arm {
                 runArm(0);
                 break;
             case INTAKE:
-                runArm(ArmConstants.armRunSpeed);
+                runArm(ArmConstants.armIntakeSpeed);
                 break;
             case OUTTAKE:
                 runArm(ArmConstants.armRunSpeed * -1);
+                break;
+            case SCORELOW:
+                runArm(ArmConstants.armRunSpeed/2);
                 break;
              case ALGAE:
                 runArm(ArmConstants.armRunSpeed * -1);

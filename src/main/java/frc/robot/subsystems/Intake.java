@@ -21,6 +21,8 @@ public class Intake {
     public TalonSRX indexMotor;
     public DigitalInput indexSensor;
 
+    public boolean isElevatorUp = false;
+
     public intakeState currentState;
     
     public enum intakeState {
@@ -123,8 +125,8 @@ public class Intake {
                 rotIntake(IntakeConstants.INTAKE_UP_POS);
                 break;
             case INTAKE:
-                runIntake(IntakeConstants.INTAKE_SPEED);
                 runIndex(IntakeConstants.INDEX_SPEED);
+                runIntake(IntakeConstants.INTAKE_SPEED);
                 rotIntake(IntakeConstants.INTAKE_DOWN_POS);
                 break;
             case OUTTAKE:

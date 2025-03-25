@@ -165,7 +165,8 @@ public class Constants {
         public static final int armRotID = 5;
         public static final int armOuttakeID = 6;
         public static final int armCancoderID = 1;
-        public static final double armRunSpeed = 0.2;
+        public static final double armIntakeSpeed = 0.2;
+        public static final double armRunSpeed = 0.6;
         public static final double armGearRatio = 52.820625;
         public static final double armGravityK = 0.8;
 
@@ -182,6 +183,11 @@ public class Constants {
         public static final double armPos1KP = 25;
         public static final double armPos1KD = 0;
 
+        
+        public static final double armPosVel = 0.3;
+        public static final double armPosAccel = 1;
+        public static final double armPosJerk = 1600;
+
         // Arm Poses
         public static final double armStowedPos = 0.25;
         public static final double armLowPos = 0.27;
@@ -192,9 +198,6 @@ public class Constants {
         public static final double armFeedPos = 0.1;
         public static final double allgePos = 0.5;
 
-        public static final double armPosVel = 0.08;
-        public static final double armPosAccel = 0.5;
-        public static final double armPosJerk = 1600;
         
     }
     public class ClimbConstants {

@@ -130,7 +130,7 @@ public class StateManager extends SubsystemBase {
                 intake.setState(intakeState.IDLE);
                 arm.setRotState(armRotState.IDLE);
                 
-                if(arm.getRot() <= 0.28 && arm.getRot() >= 0.23) {
+                if(arm.getRot() <= 0.3 && arm.getRot() >= 0.23) {
                     if(!elevatorTimer.isRunning() && armUp == true) {
                         elevatorTimer.start();
                     }
@@ -219,6 +219,7 @@ public class StateManager extends SubsystemBase {
                 intake.setState(intakeState.ROTDOWN);
                 break;
             case INTAKE:
+                elevator.setState(elevatorState.IDLE);
                 if(intakeTimer.get() <= Constants.IntakeConstants.INTAKE_WAIT_TIME) {
                     intake.setState(intakeState.INTAKE);
                 }
@@ -263,7 +264,7 @@ public class StateManager extends SubsystemBase {
                 break;
             case RUNNINGOUT:
                 if(armLow) {
-                    arm.setIntakeState(armOuttakeState.INTAKE);
+                    arm.setIntakeState(armOuttakeState.SCORELOW);
                 } else {
                     arm.setIntakeState(armOuttakeState.OUTTAKE);
                 }
@@ -274,6 +275,7 @@ public class StateManager extends SubsystemBase {
                 } else {
                     arm.setIntakeState(armOuttakeState.IDLE);
                 }
+
                 break;
 
         }
