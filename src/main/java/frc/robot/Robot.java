@@ -12,7 +12,6 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.StateManager.armState;
 import frc.robot.StateManager.robotState;
 import frc.robot.subsystems.Arm;
-import frc.robot.subsystems.Climb;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Vision;
@@ -24,25 +23,25 @@ public class Robot extends TimedRobot {
   private XboxController driver;
   
   Vision vision = new Vision();
-  Climb climb = new Climb();
+  //Climb climb = new Climb();
   Intake intake = new Intake();
   Elevator elevator = new Elevator();
   Arm arm = new Arm();
-  StateManager stateManager = new StateManager(climb, intake, elevator, arm);
+  StateManager stateManager = new StateManager(intake, elevator, arm);
   boolean isIntakeing = false;
   
 
   public Robot() {
     driver = new XboxController(0);
     m_robotContainer = new RobotContainer(stateManager, vision);
-    CommandScheduler.getInstance().registerSubsystem(stateManager);
+    // CommandScheduler.getInstance().registerSubsystem(stateManager);
   
   }
 
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
-    climb.periodic();
+    //climb.periodic();
     intake.periodic();
     elevator.periodic();
     arm.periodic();
@@ -86,10 +85,12 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.configureBindings();
     if(driver.getPOV() == 0) {
-      stateManager.setState(robotState.CLIMBUP);
+      stateManager.setState(robotState.ALGEEHIGH);
+      stateManager.setArmState(armState.RUNNINGIN);
     } 
     else if(driver.getPOV() == 180) {
-      stateManager.setState(robotState.CLIMBDOWN);
+      stateManager.setState(robotState.ALGEELOW);
+      stateManager.setArmState(armState.RUNNINGIN);
     }
     else if(driver.getRightTriggerAxis() >= 0.3) {
       stateManager.setState(robotState.INTAKE);

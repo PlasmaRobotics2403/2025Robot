@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*;
-
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -13,15 +11,18 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import choreo.Choreo.TrajectoryLogger;
 import choreo.auto.AutoFactory;
 import choreo.trajectory.SwerveSample;
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.Notifier;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
@@ -188,6 +189,31 @@ public class Swerve extends TunerSwerveDrivetrain implements Subsystem {
     public Command sysIdDynamic(SysIdRoutine.Direction direction) {
         return m_sysIdRoutineToApply.dynamic(direction);
     }
+    public SwerveRequest driveToPos(Pose2d pos) {
+        PIDController xController = new PIDController(5, 0, 0);
+        PIDController yController = new PIDController(5, 0, 0);
+
+        double xSpeed = xController.calculate(this.getState().Pose.getX(), pos.getX());
+        double ySpeed = yController.calculate(this.getState().Pose.getY(), pos.getY());
+        if(xSpeed < 0) {
+            xSpeed = Math.max(-1, xSpeed);
+        } else {
+            xSpeed = Math.min(1, xSpeed);  
+        }
+        if(ySpeed < 0) {
+            ySpeed = Math.max(-1, ySpeed);
+        } else {
+            ySpeed = Math.min(1, ySpeed);  
+        }
+
+        return new SwerveRequest.FieldCentricFacingAngle().withVelocityX(xSpeed).withVelocityY(ySpeed);
+    }
+    public boolean isWithinPos(Pose2d pose) {
+        boolean withinX = MathUtil.isNear(this.getState().Pose.getX(), pose.getX(), 0.1);
+        boolean withinY = MathUtil.isNear(this.getState().Pose.getY(), pose.getY(), 0.1);
+        return withinX && withinY;
+    }
+    
 
     @Override
     public void periodic() {

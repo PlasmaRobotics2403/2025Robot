@@ -27,7 +27,8 @@ public class Arm {
     public enum armOuttakeState {
         IDLE,
         INTAKE,
-        OUTTAKE
+        OUTTAKE,
+        ALGAE
     }
 
     public armRotState currentRotState;
@@ -38,6 +39,7 @@ public class Arm {
         MIDPOS,
         LEVELTHREE,
         HIGHPOS,
+        ALGEEPOS
     }
     public Arm() {
 
@@ -165,6 +167,9 @@ public class Arm {
             case OUTTAKE:
                 runArm(ArmConstants.armRunSpeed * -1);
                 break;
+             case ALGAE:
+                runArm(ArmConstants.armRunSpeed * -1);
+                break;
         }
         switch(currentRotState) {
             case IDLE:
@@ -184,6 +189,9 @@ public class Arm {
                 break;
             case HIGHPOS:
                 rotArmBackward(ArmConstants.armHighPos);
+                break;
+            case ALGEEPOS:
+                rotArm(ArmConstants.allgePos);
                 break;
 
         }

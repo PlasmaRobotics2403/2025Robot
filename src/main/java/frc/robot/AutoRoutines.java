@@ -6,6 +6,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 import choreo.auto.AutoFactory;
 import choreo.auto.AutoRoutine;
 import choreo.auto.AutoTrajectory;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -14,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.StateManager.armState;
 import frc.robot.StateManager.robotState;
 import frc.robot.generated.TunerConstants;
@@ -22,7 +25,7 @@ import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Vision.robotSideState;
 
 public class AutoRoutines extends SubsystemBase{
-    private final AutoFactory m_factory;
+    private AutoFactory m_factory = null;
     private StateManager stateManager;
     private RobotContainer robotContainer;
     private Swerve swerve;
@@ -46,9 +49,13 @@ public class AutoRoutines extends SubsystemBase{
         this.robotContainer = robotContainer;
     }
 
-    public Command autoAlignCommand() {
+    public Command autoAlignCommand(boolean algignLeft) {
         Command alignToTarget = new RunCommand(() -> {
-            vision.setRobotSide(robotSideState.RIGHT);
+            if(algignLeft == true) {
+                vision.setRobotSide(robotSideState.LEFT);
+            } else {
+                vision.setRobotSide(robotSideState.RIGHT);
+            }
             robotContainer.setAutoAligning(true);
             robotContainer.configureBindings();
             DriverStation.reportWarning("AUTOALIGNING", false);
@@ -59,20 +66,8 @@ public class AutoRoutines extends SubsystemBase{
         });
         return alignToTarget;
     }
-    public AutoRoutine simplePathAuto() {
-        final AutoRoutine routine = m_factory.newRoutine("SimplePath Auto");
-        final AutoTrajectory simplePath = routine.trajectory("AutoAlignPath");
-    
-        routine.active().onTrue(
-            simplePath.resetOdometry()
-                 .andThen(simplePath.cmd())
-                 
-        );
-        
-        return routine;
-    }
     public Command waitCommand(long delayMillis) {
-        return runOnce(
+        return run(
             () -> {
                 try {
                     Thread.sleep(delayMillis);
@@ -81,26 +76,113 @@ public class AutoRoutines extends SubsystemBase{
                 }
             });
     }
-public AutoRoutine autoAlignRoutine() {
-        final AutoRoutine routine = m_factory.newRoutine("Auto Align");
+    public AutoRoutine simplePathAuto() {
+        final AutoRoutine routine = m_factory.newRoutine("SimplePath Auto");
         final AutoTrajectory simplePath = routine.trajectory("AutoAlignPath");
+        routine.active().onTrue(
+            new SequentialCommandGroup(
+                runOnce(()->swerve.resetPose(new Pose2d(7.6, 4.5, new Rotation2d()))),
+                swerve.applyRequest(()->swerve.driveToPos(new Pose2d(6.5, 4.5, new Rotation2d()))).until(()->swerve.isWithinPos(new Pose2d(6.5, 4.5, new Rotation2d()))),
+                robotContainer.drive(0, 0, 0).withTimeout(0.1)
+            )
+        );
+        
+        return routine;
+    }
+    public AutoRoutine twoPieceAutoRed() {
+        final AutoRoutine routine = m_factory.newRoutine("Auto Align");
+        final AutoTrajectory path1 = routine.trajectory("RedMiddleLeft2part1");
+        final AutoTrajectory path2 = routine.trajectory("RedMiddleLeft2part2");
+        final AutoTrajectory path3 = routine.trajectory("RedMiddleLeft2part3");
+
 
         routine.active().onTrue(
             new SequentialCommandGroup(
-                autoAlignCommand().withTimeout(5),
-                
-                stateManager.setStateCommand(robotState.LEVELONESCORE),
-                waitCommand(20000),
-                stateManager.setArmStateCommand(armState.RUNNINGIN),
-                waitCommand(20000),
-                stateManager.setArmStateCommand(armState.IDLE),
-                stateManager.setStateCommand(robotState.IDLE)
+                path1.resetOdometry(),
+                path1.cmd(),
+                // swerve.applyRequest(()->swerve.driveToPos(new Pose2d(6.5, 4.5, new Rotation2d()))).until(()->swerve.isWithinPos(new Pose2d(6.5, 4.5, new Rotation2d()))),
+                // robotContainer.drive(0, 0, 0).withTimeout(0.1),
+                autoAlignCommand(false).withTimeout(2),
+                // stateManager.setStateL3Command().alongWith(waitCommand(1000)).withTimeout(4),
+                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
+                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
+                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
+                run(()->stateManager.setState(robotState.IDLE)).withTimeout(1),
 
-                    
+                path2.cmd().alongWith(new SequentialCommandGroup(new WaitCommand(2), run(() -> stateManager.setState(robotState.INTAKE)).withTimeout(1))),
+                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
+                path3.cmd(),
+                autoAlignCommand(false).withTimeout(1.5),
+                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
+                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
+                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
+                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
+                robotContainer.drive(0, 0, 0)
+
             )
         );
 
         return routine;
     }
+    public AutoRoutine twoPieceAutoBlue() {
+        final AutoRoutine routine = m_factory.newRoutine("Auto Align");
+        final AutoTrajectory path1 = routine.trajectory("BlueMiddleLeft2part1");
+        final AutoTrajectory path2 = routine.trajectory("BlueMiddleLeft2part2");
+        final AutoTrajectory path3 = routine.trajectory("BlueMiddleLeft2part3");
+
+
+        routine.active().onTrue(
+            new SequentialCommandGroup(
+                runOnce(()->swerve.resetPose(new Pose2d(7.2, 4.2, new Rotation2d()))),
+                swerve.applyRequest(()->swerve.driveToPos(new Pose2d(6.2, 4.2, new Rotation2d()))).until(()->swerve.isWithinPos(new Pose2d(6.5, 4.5, new Rotation2d()))).withTimeout(2),
+                robotContainer.drive(0, 0, 0).withTimeout(0.1),
+                autoAlignCommand(false).withTimeout(2),
+                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
+                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
+                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
+                run(()->stateManager.setState(robotState.IDLE)).withTimeout(1),
+
+                path2.cmd().alongWith(new SequentialCommandGroup(new WaitCommand(2), run(() -> stateManager.setState(robotState.INTAKE)).withTimeout(1))),
+                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
+                path3.cmd(),
+                autoAlignCommand(false).withTimeout(1.5),
+                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
+                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
+                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
+                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
+                robotContainer.drive(0, 0, 0)
+
+            )
+        );
+
+        return routine;
+    }
+
+public AutoRoutine autoAlignRoutine() {
+        final AutoRoutine routine = m_factory.newRoutine("Auto Align");
+        final AutoTrajectory path1 = routine.trajectory("AutoAlignPath");
+
+
+        routine.active().onTrue(
+            new SequentialCommandGroup(
+                runOnce(()->swerve.resetPose(new Pose2d(7.6, 4.5, new Rotation2d()))),
+                //path1.cmd(),
+                swerve.applyRequest(()->swerve.driveToPos(new Pose2d(6.5, 4.5, new Rotation2d()))).until(()->swerve.isWithinPos(new Pose2d(6.5, 4.5, new Rotation2d()))),
+                robotContainer.drive(0, 0, 0).withTimeout(0.1),
+                autoAlignCommand(false).withTimeout(2),
+                // stateManager.setStateL3Command().alongWith(waitCommand(1000)).withTimeout(4),
+                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
+                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
+                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
+                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
+
+
+                robotContainer.drive(0, 0, 0)
+            )
+        );
+
+        return routine;
+    }
+    
 
 }

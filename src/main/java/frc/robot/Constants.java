@@ -23,10 +23,10 @@ public class Constants {
         public static final Matrix<N3, N1> kMultiTagStdDevs = VecBuilder.fill(0.5, 0.5, 1);
 
         /* - - - - - - - TARGET 6 POSES - - - - - - - - */
-        public static final double Target6LeftXPos = 0.86; 
-        public static final double Target6LeftYPos = -2.8; 
-        public static final double Target6RightXPos = 0.87;
-        public static final double Target6RightYPos = 0.37;
+        public static final double Target6LeftXPos = 1.25; 
+        public static final double Target6LeftYPos = -2.4; 
+        public static final double Target6RightXPos = 1.25;
+        public static final double Target6RightYPos = 0.67;
 
         /* - - - - - - - TARGET 7 POSES - - - - - - - - */
         public static final double Target7LeftXPos = 0.89; 
@@ -35,16 +35,16 @@ public class Constants {
         public static final double Target7RightYPos = 0.17;
 
         /* - - - - - - - TARGET 8 POSES - - - - - - - - */
-        public static final double Target8LeftXPos = 0.86; 
-        public static final double Target8LeftYPos = -2.85; 
-        public static final double Target8RightXPos = 0.87;
-        public static final double Target8RightYPos = 0.12;
+        public static final double Target8LeftXPos = 1.3; 
+        public static final double Target8LeftYPos = -2.65; 
+        public static final double Target8RightXPos = 1;
+        public static final double Target8RightYPos = 0.61;
 
         /* - - - - - - - TARGET 9 POSES - - - - - - - - */
-        public static final double Target9LeftXPos = 0.86; 
-        public static final double Target9LeftYPos = -2.84; 
+        public static final double Target9LeftXPos = 1.1; 
+        public static final double Target9LeftYPos = -2.65; 
         public static final double Target9RightXPos = 0.86;
-        public static final double Target9RightYPos = 0.65;
+        public static final double Target9RightYPos = 0.61;
 
         /* - - - - - - - TARGET 10 POSES - - - - - - - - */
         public static final double Target10LeftXPos = 1; 
@@ -90,10 +90,10 @@ public class Constants {
         public static final double Target21RightYPos = 0.27;
 
         /* - - - - - - - TARGET 22 POSES - - - - - - - - */
-        public static final double Target22LeftXPos = 1.265; 
-        public static final double Target22LeftYPos = -3.021; 
-        public static final double Target22RightXPos = 1.434;
-        public static final double Target22RightYPos = 0.27;
+        public static final double Target22LeftXPos = 1.15; 
+        public static final double Target22LeftYPos = -2.9; 
+        public static final double Target22RightXPos = 1.15;
+        public static final double Target22RightYPos = 0.35;
     }
 
     public static class IntakeConstants {
@@ -147,7 +147,8 @@ public class Constants {
         public static final double LEVEL3_HEIGHT = 47;
         public static final double LEVEL4_HEIGHT = 117;
         public static final double FEEDER_HEIGHT = 50;
-
+        public static final double ALLGE_POS_LOW = 47;
+        public static final double ALLGE_POS_HIGH = 40;
 
         public static final double elevatorPosKS = 0.25;
         public static final double elevatorPosKV = 0.12;
@@ -189,6 +190,7 @@ public class Constants {
         
         public static final double armHighPos = -0.43;
         public static final double armFeedPos = 0.1;
+        public static final double allgePos = 0.5;
 
         public static final double armPosVel = 0.08;
         public static final double armPosAccel = 0.5;

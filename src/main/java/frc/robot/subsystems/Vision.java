@@ -106,7 +106,11 @@ public class Vision {
 
     }
     public double getYaw() {
-        return pigeon2.getYaw().getValueAsDouble();
+        if(pigeon2.getYaw().getValueAsDouble()>0.01) {
+            return ((pigeon2.getYaw().getValueAsDouble()+180)%360)-180;
+        } else {
+            return ((pigeon2.getYaw().getValueAsDouble()-180)%360)+180;
+        }
     }
     public double getWantedYaw() {
         return wantedRot;
@@ -169,8 +173,8 @@ public class Vision {
                     case 7:
                         wantedRot = 180;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target7LeftXPos;
-                            wantedY = VisionConstants.Target7LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -179,8 +183,8 @@ public class Vision {
                     case 8:
                         wantedRot = -120;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target8LeftXPos;
-                            wantedY = VisionConstants.Target8LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -189,8 +193,8 @@ public class Vision {
                     case 9:
                         wantedRot = -60;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target9LeftXPos;
-                            wantedY = VisionConstants.Target9LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -199,8 +203,8 @@ public class Vision {
                     case 10:
                         wantedRot = 0;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target10LeftXPos;
-                            wantedY = VisionConstants.Target10LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -209,8 +213,8 @@ public class Vision {
                     case 11:
                         wantedRot = 60;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target11LeftXPos;
-                            wantedY = VisionConstants.Target11LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -219,8 +223,8 @@ public class Vision {
                     case 17:
                         wantedRot = -120;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target17LeftXPos;
-                            wantedY = VisionConstants.Target17LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -229,8 +233,8 @@ public class Vision {
                     case 18:
                         wantedRot = 180;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target18LeftXPos;
-                            wantedY = VisionConstants.Target18LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -239,8 +243,8 @@ public class Vision {
                     case 19:
                         wantedRot = 120;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target19LeftXPos;
-                            wantedY = VisionConstants.Target19LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -249,8 +253,8 @@ public class Vision {
                     case 20:
                         wantedRot = 60;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target20LeftXPos;
-                            wantedY = VisionConstants.Target20LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -259,8 +263,8 @@ public class Vision {
                     case 21:
                         wantedRot = 0;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target21LeftXPos;
-                            wantedY = VisionConstants.Target21LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -269,8 +273,8 @@ public class Vision {
                     case 22:
                         wantedRot = -60;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target22LeftXPos;
-                            wantedY = VisionConstants.Target22LeftYPos;
+                            wantedX = VisionConstants.Target6LeftXPos;
+                            wantedY = VisionConstants.Target6LeftYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -298,8 +302,8 @@ public class Vision {
                     case 7:
                         wantedRot = 180;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target7RightXPos;
-                            wantedY = VisionConstants.Target7RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -308,8 +312,8 @@ public class Vision {
                     case 8:
                         wantedRot = -120;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target8RightXPos;
-                            wantedY = VisionConstants.Target8RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -318,8 +322,8 @@ public class Vision {
                     case 9:
                         wantedRot = -60;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target9RightXPos;
-                            wantedY = VisionConstants.Target9RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -328,8 +332,8 @@ public class Vision {
                     case 10:
                         wantedRot = 0;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target10RightXPos;
-                            wantedY = VisionConstants.Target10RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -338,8 +342,8 @@ public class Vision {
                     case 11:
                         wantedRot = 60;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target11RightXPos;
-                            wantedY = VisionConstants.Target11RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -348,8 +352,8 @@ public class Vision {
                     case 17:
                         wantedRot = -120;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target17RightXPos;
-                            wantedY = VisionConstants.Target17RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -358,8 +362,8 @@ public class Vision {
                     case 18:
                         wantedRot = 180;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target18RightXPos;
-                            wantedY = VisionConstants.Target18RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -368,8 +372,8 @@ public class Vision {
                     case 19:
                         wantedRot = 120;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target19RightXPos;
-                            wantedY = VisionConstants.Target19RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -378,8 +382,8 @@ public class Vision {
                     case 20:
                         wantedRot = 60;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target20RightXPos;
-                            wantedY = VisionConstants.Target20RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -388,8 +392,8 @@ public class Vision {
                     case 21:
                         wantedRot = 0;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target21RightXPos;
-                            wantedY = VisionConstants.Target21RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;
@@ -398,8 +402,8 @@ public class Vision {
                     case 22:
                         wantedRot = -60;
                         if(startedAutoAligning) {
-                            wantedX = VisionConstants.Target22RightXPos;
-                            wantedY = VisionConstants.Target22RightYPos;
+                            wantedX = VisionConstants.Target6RightXPos;
+                            wantedY = VisionConstants.Target6RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;

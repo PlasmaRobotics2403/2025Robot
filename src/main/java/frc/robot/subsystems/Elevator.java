@@ -31,6 +31,8 @@ public class Elevator {
         LEVELFOURHEIGHT,
         FEEDER,
         IDLE,
+        ALLGEEHIGH,
+        ALGEELOW,
         TEST
     }
 
@@ -176,7 +178,7 @@ public class Elevator {
                 break;
             case LEVELTWOHEIGHT:
                 needToGoUp = false;
-                magicElevator(ElevatorConstants.LEVEL2_HEIGHT); 
+                magicElevator(ElevatorConstants.LEVEL2_HEIGHT);
                 break;
             case LEVELTHREEHEIGHT:
                 magicElevator(ElevatorConstants.LEVEL3_HEIGHT);
@@ -189,6 +191,12 @@ public class Elevator {
                 break;
             case IDLEHIGH:
                 magicElevator(ElevatorConstants.LEVEL2_HEIGHT_HIGH);
+                break;
+            case ALLGEEHIGH:
+                magicElevator(ElevatorConstants.ALLGE_POS_HIGH);
+                break;
+            case ALGEELOW:
+                magicElevator(ElevatorConstants.ALLGE_POS_LOW);
                 break;
             case TEST:
                 runElevator(0.25);

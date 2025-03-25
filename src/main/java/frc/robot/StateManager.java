@@ -5,11 +5,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.StateManager.levelTwoStates;
+import frc.robot.StateManager.robotState;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Arm.armOuttakeState;
 import frc.robot.subsystems.Arm.armRotState;
-import frc.robot.subsystems.Climb;
-import frc.robot.subsystems.Climb.climbState;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.elevatorState;
 import frc.robot.subsystems.Intake;
@@ -18,7 +17,7 @@ import frc.robot.subsystems.Intake.intakeState;
 public class StateManager extends SubsystemBase {
 
     // Components of the robot
-    public Climb climb;
+    //public Climb climb;
     public Intake intake;
     public Elevator elevator;
     public Arm arm;
@@ -56,18 +55,18 @@ public class StateManager extends SubsystemBase {
         INTAKE,
         EJECT,
         ARMOUTTAKE,
-        TESTELEVATOR
+        TESTELEVATOR,
+        ALGEEHIGH,
+        ALGEELOW
 
     }
 
-    public StateManager(Climb climb, Intake intake, Elevator elevator, Arm arm) {
+    public StateManager(Intake intake, Elevator elevator, Arm arm) {
         intakeTimer = new Timer();
         elevatorTimer = new Timer();
         currentState = robotState.IDLE;
         currentArmState = armState.IDLE;
         currentLevelTwoState = levelTwoStates.IDLE;
-
-        this.climb = climb;
         this.intake = intake;
         this.elevator = elevator;
         this.arm = arm;
@@ -90,14 +89,28 @@ public class StateManager extends SubsystemBase {
     }
 
     public Command setStateCommand(robotState state) {
-        return runOnce(
+        return run(
             () -> {
                 setState(state);
             });
 
     }
+    public Command setStateL4Command() {
+        return run(
+            () -> {
+                setState(robotState.LEVELFOURSCORE);
+            });
+
+    }
+    public Command setStateL3Command() {
+        return run(
+            () -> {
+                setState(robotState.LEVELTHREESCORE);
+            });
+
+    }
     public Command setArmStateCommand(armState state) {
-        return runOnce(
+        return run(
             () -> {
                 setArmState(state);
             });
@@ -113,7 +126,7 @@ public class StateManager extends SubsystemBase {
         switch(currentState) {
             case IDLE:
                 armLow = false;
-                climb.setState(climbState.IDLE);
+                //climb.setState(climbState.IDLE);
                 intake.setState(intakeState.IDLE);
                 arm.setRotState(armRotState.IDLE);
                 
@@ -194,10 +207,10 @@ public class StateManager extends SubsystemBase {
                 }
                 break;
             case CLIMBUP:
-                climb.setState(climbState.CLIMBUP);
+                //climb.setState(climbState.CLIMBUP);
                 break;
             case CLIMBDOWN:
-                climb.setState(climbState.CLIMBDOWN);
+                //climb.setState(climbState.CLIMBDOWN);
                 break;
             case TESTINTAKEUP:
                 intake.setState(intakeState.ROTUP);
@@ -226,7 +239,19 @@ public class StateManager extends SubsystemBase {
             case TESTELEVATOR:
                 elevator.setState(elevatorState.TEST);
                 break;
-
+            case ALGEEHIGH:
+                //armLow = true;
+                armUp = true;
+                elevator.setState(elevatorState.ALLGEEHIGH);
+                arm.setRotState(armRotState.ALGEEPOS);
+                arm.setIntakeState(armOuttakeState.ALGAE);
+                break;
+            case ALGEELOW:
+                //armLow = true;
+                armUp = true;
+                elevator.setState(elevatorState.ALGEELOW);
+                arm.setRotState(armRotState.ALGEEPOS);
+                break;
         
         }
         switch (currentArmState) {
@@ -250,7 +275,7 @@ public class StateManager extends SubsystemBase {
                     arm.setIntakeState(armOuttakeState.IDLE);
                 }
                 break;
-                
+
         }
     }
 }

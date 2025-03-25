@@ -72,33 +72,18 @@ public class RobotContainer {
         startTrigger = joystick.start();
         autoChooser.addRoutine("SimplePath", autoRoutines::simplePathAuto);
         autoChooser.addRoutine("AutoAlign", autoRoutines::autoAlignRoutine);
+        autoChooser.addRoutine("2 Piece Red", autoRoutines::twoPieceAutoRed);
+        autoChooser.addRoutine("2 Piece Blue", autoRoutines::twoPieceAutoBlue);
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         configureBindings();
-        drivetrain.setDefaultCommand(
-            // Drivetrain will execute this command periodically
-            drivetrain.applyRequest(() ->
-                drive.withVelocityX(driveXOutput) // Drive forward with negative Y (forward)
-                    .withVelocityY(driveYOutput) // Drive left with negative X (left)
-                    .withRotationalRate(driveTurnOutput) // Drive counterclockwise with negative X (left)
-            )
-        );
+
 
     }
 
     public void configureBindings() {
         // Note that X is defined as forward according to WPILib convention,
         // and Y is defined as to the left according to WPILib convention.
-
-        //driveXOutputRobot = Math.cos(Math.toRadians(vision.getYaw())) * vision.moveRobotPoseX() - Math.sin(Math.toRadians(vision.getYaw())) * vision.moveRobotPoseY();
-        //driveYOutputRobot = Math.sin(Math.toRadians(vision.getYaw())) * vision.moveRobotPoseX() + Math.cos(Math.toRadians(vision.getYaw())) * vision.moveRobotPoseY();
-        // robotSpeeds.vxMetersPerSecond = vision.moveRobotPoseX();
-        // robotSpeeds.vyMetersPerSecond = vision.moveRobotPoseY();
-        // robotSpeeds.omegaRadiansPerSecond =0;
-        // Rotation2d robotAngle = new Rotation2d(vision.getYaw());
-        // ChassisSpeeds fieldReletaveSpeeds = ChassisSpeeds.fromRobotRelativeSpeeds(robotSpeeds, robotAngle);
-        // driveXOutputRobot = fieldReletaveSpeeds.vxMetersPerSecond;
-        // driveYOutputRobot = fieldReletaveSpeeds.vyMetersPerSecond;
         driveXOutputRobot = vision.moveRobotPoseX();
         driveYOutputRobot = vision.moveRobotPoseY();
 
@@ -124,11 +109,18 @@ public class RobotContainer {
             } else {
                 driveTurnOutput = vision.moveRobotPoseSpin() * MaxAngularRate;
             }
+            drivetrain.setControl(
+                driveRobotReletave.withVelocityX(driveXOutput)
+                                  .withVelocityY(driveYOutput)
+                                  .withRotationalRate(driveTurnOutput)
+            );
         }
         else{
-            driveXOutput = -joystick.getLeftY() * MaxSpeed * isCreep;
-            driveYOutput = -joystick.getLeftX() * MaxSpeed * isCreep;
-            driveTurnOutput = -joystick.getRightX() * MaxAngularRate * isCreep;
+            drivetrain.setControl(
+                 drive.withVelocityX(-joystick.getLeftY() * MaxSpeed * isCreep)
+                      .withVelocityY(-joystick.getLeftX() * MaxSpeed * isCreep)
+                      .withRotationalRate(-joystick.getRightX() * MaxAngularRate * isCreep)
+            );
         }
         SmartDashboard.putNumber("RobotOutputX", driveXOutputRobot);
         SmartDashboard.putNumber("RobotOutputY", driveYOutputRobot);
@@ -136,7 +128,14 @@ public class RobotContainer {
         //drivetrain.registerTelemetry(logger::telemeterize);
     } 
     
-
+    public Command drive(double x, double y, double rot) {
+       return drivetrain.applyRequest(() ->
+                 drive.withVelocityX(-y * MaxSpeed * isCreep)
+                      .withVelocityY(-x * MaxSpeed)
+                      .withRotationalRate(rot * MaxAngularRate)
+        );
+        
+    }
     public Command getAutonomousCommand() {
         /* Run the routine selected from the auto chooser */
         return autoChooser.selectedCommand();
