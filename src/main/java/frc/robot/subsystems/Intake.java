@@ -22,6 +22,7 @@ public class Intake {
     public DigitalInput indexSensor;
 
     public boolean isElevatorUp = false;
+    public boolean holdingAlgae = false;
 
     public intakeState currentState;
     
@@ -30,7 +31,9 @@ public class Intake {
         INTAKE,
         OUTTAKE,
         ROTUP,
-        ROTDOWN
+        ROTDOWN,
+        ALGEEIN,
+        ALGEEOUT
     }
 
     public Intake() {
@@ -109,7 +112,9 @@ public class Intake {
     public intakeState getState() {
         return currentState;
     }
-
+    public void setAlgaeUp(boolean isUp) {
+        holdingAlgae = isUp;
+    }
     public void log() {
         SmartDashboard.putNumber("Intake Rot Pos", getRotPosition());
         SmartDashboard.putBoolean("IntakeSensor", getIndexSensor());
@@ -122,7 +127,11 @@ public class Intake {
                 runIntake(0);
                 rotIntakePercent(0);
                 runIndex(0);
-                rotIntake(IntakeConstants.INTAKE_UP_POS);
+                if(holdingAlgae) {
+                    rotIntake(IntakeConstants.INTAKE_ALGEE_POS);
+                } else {
+                    rotIntake(IntakeConstants.INTAKE_UP_POS);
+                }
                 break;
             case INTAKE:
                 runIndex(IntakeConstants.INDEX_SPEED);
@@ -140,7 +149,16 @@ public class Intake {
             case ROTDOWN:
                 rotIntakePercent(-0.3);
                 break;
-
+            case ALGEEIN:
+                runIntake(-IntakeConstants.ALGAE_SPEED);
+                rotIntake(IntakeConstants.INTAKE_ALGEE_POS);
+                break;
+            case ALGEEOUT:
+                rotIntake(IntakeConstants.INTAKE_UP_POS);
+                if(getRotPosition() <= 3) {
+                    runIntake(IntakeConstants.ALGAE_SPEED);
+                }
+                break;
 
         }
     }

@@ -13,6 +13,9 @@ import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Elevator.elevatorState;
 import frc.robot.subsystems.Intake;
 import frc.robot.subsystems.Intake.intakeState;
+import frc.robot.subsystems.LEDs;
+import frc.robot.subsystems.LEDs.LEDState;
+import frc.robot.subsystems.Vision;
 
 public class StateManager extends SubsystemBase {
 
@@ -21,6 +24,8 @@ public class StateManager extends SubsystemBase {
     public Intake intake;
     public Elevator elevator;
     public Arm arm;
+    public LEDs leds;
+    public Vision vision;
     public Timer intakeTimer;
     public Timer elevatorTimer;
     public robotState currentState;
@@ -57,11 +62,13 @@ public class StateManager extends SubsystemBase {
         ARMOUTTAKE,
         TESTELEVATOR,
         ALGEEHIGH,
-        ALGEELOW
+        ALGEELOW,
+        ALGEEIN,
+        ALGEEOUT
 
     }
 
-    public StateManager(Intake intake, Elevator elevator, Arm arm) {
+    public StateManager(Intake intake, Elevator elevator, Arm arm, LEDs leds, Vision vision) {
         intakeTimer = new Timer();
         elevatorTimer = new Timer();
         currentState = robotState.IDLE;
@@ -70,6 +77,8 @@ public class StateManager extends SubsystemBase {
         this.intake = intake;
         this.elevator = elevator;
         this.arm = arm;
+        this.leds = leds;
+        this.vision = vision;
     }
 
     public void setState(robotState state) {
@@ -114,15 +123,20 @@ public class StateManager extends SubsystemBase {
             () -> {
                 setArmState(state);
             });
-
     }
-
     public void logging() {
         SmartDashboard.putString("Robot State", currentState.toString());
         SmartDashboard.putBoolean("Intake Timer Started", intakeTimer.isRunning());
     }
     public void periodic() {
         logging();
+        if(vision.isAutoAligned()) {
+            leds.setState(LEDState.ALLIGNED);
+        } else if (vision.getApriltagNumber() != 0) {
+            leds.setState(LEDState.SEETARGET);
+        } else {
+            leds.setState(LEDState.NOPEICE);
+        }
         switch(currentState) {
             case IDLE:
                 armLow = false;
@@ -219,7 +233,20 @@ public class StateManager extends SubsystemBase {
                 intake.setState(intakeState.ROTDOWN);
                 break;
             case INTAKE:
-                elevator.setState(elevatorState.IDLE);
+                if(arm.getRot() <= 0.3 && arm.getRot() >= 0.23) {
+                    if(!elevatorTimer.isRunning() && armUp == true) {
+                        elevatorTimer.start();
+                    }
+                    if(elevatorTimer.get() >= 0) {
+                        elevator.setState(elevatorState.IDLE);
+                        armUp = false;
+                        elevatorTimer.stop();
+                        elevatorTimer.reset();
+                    }
+                } else {
+                    elevator.setState(elevatorState.IDLEHIGH);
+                }
+
                 if(intakeTimer.get() <= Constants.IntakeConstants.INTAKE_WAIT_TIME) {
                     intake.setState(intakeState.INTAKE);
                 }
@@ -252,6 +279,14 @@ public class StateManager extends SubsystemBase {
                 armUp = true;
                 elevator.setState(elevatorState.ALGEELOW);
                 arm.setRotState(armRotState.ALGEEPOS);
+                break;
+            case ALGEEIN:
+                intake.setAlgaeUp(true);
+                intake.setState(intakeState.ALGEEIN);
+                break;
+            case ALGEEOUT:
+                intake.setAlgaeUp(false);
+                intake.setState(intakeState.ALGEEOUT);
                 break;
         
         }

@@ -43,7 +43,7 @@ public class RobotContainer {
     private final XboxController controller = new XboxController(0);
     private final CommandXboxController joystick = new CommandXboxController(0);
 
-    public final Swerve drivetrain = TunerConstants.createDrivetrain();
+    public final Swerve drivetrain = (Swerve) TunerConstants.createDrivetrain();
 
     public ChassisSpeeds robotSpeeds = new ChassisSpeeds();
 
@@ -71,14 +71,14 @@ public class RobotContainer {
 
         startTrigger = joystick.start();
         autoChooser.addRoutine("SimplePath", autoRoutines::simplePathAuto);
-        autoChooser.addRoutine("AutoAlign", autoRoutines::autoAlignRoutine);
+        autoChooser.addRoutine("One Piece Mid", autoRoutines::onePieceMid);
+        autoChooser.addRoutine("One Piece Far", autoRoutines::onePieceFar);
+        autoChooser.addRoutine("One Piece Near", autoRoutines::onePieceNear);
         autoChooser.addRoutine("2 Piece Red", autoRoutines::twoPieceAutoRed);
         autoChooser.addRoutine("2 Piece Blue", autoRoutines::twoPieceAutoBlue);
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         configureBindings();
-
-
     }
 
     public void configureBindings() {

@@ -75,7 +75,7 @@ public class Constants {
         public static final double Target19LeftXPos = 1.265; 
         public static final double Target19LeftYPos = -3.021; 
         public static final double Target19RightXPos = 1.434;
-        public static final double Target19RightYPos = 0.27;
+        public static final double Target19RightYPos = 0.75;
 
         /* - - - - - - - TARGET 20 POSES - - - - - - - - */
         public static final double Target20LeftXPos = 1.265; 
@@ -103,12 +103,14 @@ public class Constants {
 
         public static final double INTAKE_SPEED = 0.6;
         public static final double INDEX_SPEED = 0.6;
+        public static final double ALGAE_SPEED = 0.3;
 
         public static final double INTAKE_WAIT_TIME = 0.01;
 
         //Positions
         public static final double INTAKE_UP_POS = 0;
         public static final double INTAKE_DOWN_POS = 20.3;
+        public static final double INTAKE_ALGEE_POS = 11.85;
 
         // Rotation Pid
         public static final double intakePivotKS = 0.25;
@@ -166,7 +168,7 @@ public class Constants {
         public static final int armOuttakeID = 6;
         public static final int armCancoderID = 1;
         public static final double armIntakeSpeed = 0.2;
-        public static final double armRunSpeed = 0.6;
+        public static final double armRunSpeed = 0.5;
         public static final double armGearRatio = 52.820625;
         public static final double armGravityK = 0.8;
 

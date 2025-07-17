@@ -112,6 +112,16 @@ public class Vision {
             return ((pigeon2.getYaw().getValueAsDouble()-180)%360)+180;
         }
     }
+    public boolean isAutoAligned() {
+        if(currentTag == 0) {
+            return false;
+        } else {
+            return getYaw() <= (wantedRot + 2) && getYaw() >= (wantedRot - 2) && 
+                   getRobotX() <= (wantedX + 0.5) && getRobotX() >= (wantedX - 0.5) &&
+                   getRobotY() <= (wantedY + 0.5) && getRobotY() >= (wantedY - 0.5);
+        }
+        
+    }
     public double getWantedYaw() {
         return wantedRot;
     }
@@ -373,7 +383,7 @@ public class Vision {
                         wantedRot = 120;
                         if(startedAutoAligning) {
                             wantedX = VisionConstants.Target6RightXPos;
-                            wantedY = VisionConstants.Target6RightYPos;
+                            wantedY = VisionConstants.Target19RightYPos;
                         } else {
                             wantedX = 0;
                             wantedY = 0;

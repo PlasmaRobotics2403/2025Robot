@@ -12,6 +12,7 @@ import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -158,7 +159,7 @@ public class AutoRoutines extends SubsystemBase{
         return routine;
     }
 
-public AutoRoutine autoAlignRoutine() {
+public AutoRoutine onePieceMid() {
         final AutoRoutine routine = m_factory.newRoutine("Auto Align");
         final AutoTrajectory path1 = routine.trajectory("AutoAlignPath");
 
@@ -183,6 +184,67 @@ public AutoRoutine autoAlignRoutine() {
 
         return routine;
     }
-    
+
+    public AutoRoutine onePieceNear() {
+        final AutoRoutine routine = m_factory.newRoutine("onePieceNear");
+        AutoTrajectory selectedPath;
+        boolean alginLeft;
+        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+            selectedPath = routine.trajectory("Blue1PieceNear");
+            alginLeft = true;
+        } else {
+            selectedPath = routine.trajectory("Red1PieceNear");
+            alginLeft = false;
+        }
+
+        routine.active().onTrue(
+            new SequentialCommandGroup(
+                selectedPath.resetOdometry(),
+                selectedPath.cmd(),
+                robotContainer.drive(0, 0, 0).withTimeout(0.1),
+                autoAlignCommand(alginLeft).withTimeout(2),
+                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
+                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
+                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
+                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
+
+
+                robotContainer.drive(0, 0, 0)
+            )
+        );
+
+        return routine;
+    }
+
+    public AutoRoutine onePieceFar() {
+        final AutoRoutine routine = m_factory.newRoutine("onePieceFar");
+        AutoTrajectory selectedPath;
+        boolean alginLeft;
+        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+            selectedPath = routine.trajectory("Blue1PieceFar");
+            alginLeft = false;
+        } else {
+            selectedPath = routine.trajectory("Red1PieceFar");
+            alginLeft = true;
+        }
+
+        routine.active().onTrue(
+            new SequentialCommandGroup(
+                selectedPath.resetOdometry(),
+                selectedPath.cmd(),
+                robotContainer.drive(0, 0, 0).withTimeout(0.1),
+                autoAlignCommand(alginLeft).withTimeout(2),
+                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
+                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
+                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
+                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
+
+
+                robotContainer.drive(0, 0, 0)
+            )
+        );
+
+        return routine;
+    }
 
 }

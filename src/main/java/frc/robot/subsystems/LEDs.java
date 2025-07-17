@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
 import java.util.Random;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
+import edu.wpi.first.wpilibj.LEDPattern;
 
 public class LEDs {
     private AddressableLED LED;
@@ -55,14 +57,15 @@ public class LEDs {
         BOGO,
         ALLIGNED,
         HASPEICE,
+        SEETARGET,
         NOPEICE;
     }
 
     private LEDState currentState;
 
     public LEDs() {
-        LED = new AddressableLED(0);
-        LEDBuffer = new AddressableLEDBuffer(27);
+        LED = new AddressableLED(1);
+        LEDBuffer = new AddressableLEDBuffer(28);
         LED.setLength(LEDBuffer.getLength());
 
         currentState = LEDState.NOPEICE;
@@ -177,13 +180,20 @@ public class LEDs {
                 }
                 break;
             case ALLIGNED:
-                setHSV(Color.GREEN.h, Color.GREEN.s, Color.GREEN.v);
+                LEDPattern green = LEDPattern.solid(edu.wpi.first.wpilibj.util.Color.kGreen);
+                green.applyTo(LEDBuffer);
+                LED.setData(LEDBuffer);
+                //setHSV(Color.GREEN.h, Color.GREEN.s, Color.GREEN.v);
                 break;
-            case HASPEICE:
-                setHSV(Color.BLUE.h, Color.BLUE.s, Color.BLUE.v);
+            case SEETARGET:
+                LEDPattern purple = LEDPattern.solid(edu.wpi.first.wpilibj.util.Color.kWhite);
+                purple.applyTo(LEDBuffer);
+                LED.setData(LEDBuffer);
                 break;
             case NOPEICE:
-                setHSV(Color.RED.h, Color.RED.s, Color.RED.v);
+                LEDPattern red = LEDPattern.solid(edu.wpi.first.wpilibj.util.Color.kPurple);
+                red.applyTo(LEDBuffer);
+                LED.setData(LEDBuffer);
                 break;
         }
     }

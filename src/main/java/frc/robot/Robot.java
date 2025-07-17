@@ -14,6 +14,7 @@ import frc.robot.StateManager.robotState;
 import frc.robot.subsystems.Arm;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.LEDs;
 import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Vision.robotSideState;
 
@@ -26,8 +27,9 @@ public class Robot extends TimedRobot {
   //Climb climb = new Climb();
   Intake intake = new Intake();
   Elevator elevator = new Elevator();
+  LEDs leds = new LEDs();
   Arm arm = new Arm();
-  StateManager stateManager = new StateManager(intake, elevator, arm);
+  StateManager stateManager = new StateManager(intake, elevator, arm, leds, vision);
   boolean isIntakeing = false;
   
 
@@ -45,6 +47,7 @@ public class Robot extends TimedRobot {
     intake.periodic();
     elevator.periodic();
     arm.periodic();
+    leds.periodic();
     vision.update();
     SmartDashboard.putBoolean("IsAutoAligning", m_robotContainer.isAutoAligning());
   }
@@ -85,12 +88,14 @@ public class Robot extends TimedRobot {
 
     m_robotContainer.configureBindings();
     if(driver.getPOV() == 0) {
-      stateManager.setState(robotState.ALGEEHIGH);
-      stateManager.setArmState(armState.RUNNINGIN);
+      stateManager.setState(robotState.CLIMBUP);
+      // stateManager.setState(robotState.ALGEEHIGH);
+      // stateManager.setArmState(armState.RUNNINGIN);
     } 
     else if(driver.getPOV() == 180) {
-      stateManager.setState(robotState.ALGEELOW);
-      stateManager.setArmState(armState.RUNNINGIN);
+      stateManager.setState(robotState.CLIMBDOWN);
+      // stateManager.setState(robotState.ALGEELOW);
+      // stateManager.setArmState(armState.RUNNINGIN);
     }
     else if(driver.getRightTriggerAxis() >= 0.3) {
       stateManager.setState(robotState.INTAKE);
@@ -109,12 +114,16 @@ public class Robot extends TimedRobot {
     else if(driver.getYButton() == true) {
       stateManager.setState(robotState.LEVELFOURSCORE);
     }
+    else if(driver.getLeftBumperButton() == true) {
+      stateManager.setState(robotState.ALGEEIN);
+    }
+    else if(driver.getBackButton() == true) {
+      stateManager.setState(robotState.ALGEEOUT);
+    }
     else {
       stateManager.setState(robotState.IDLE);
       stateManager.setArmState(armState.IDLE);
       isIntakeing = false;
-      m_robotContainer.setCreeping(1);
-
     }
     if(driver.getPOV() == 270) {
       vision.setRobotSide(robotSideState.LEFT);
@@ -128,6 +137,8 @@ public class Robot extends TimedRobot {
     }
     if(driver.getLeftTriggerAxis() >= 0.3) {
       m_robotContainer.setCreeping(0.3);
+    } else {
+      m_robotContainer.setCreeping(1);
     }
     if(driver.getRightBumperButton() == true) {
         stateManager.setArmState(armState.RUNNINGOUT);
