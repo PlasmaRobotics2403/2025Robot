@@ -26,50 +26,50 @@ public class Constants {
         public static final double Target6LeftXPos = 1.25; 
         public static final double Target6LeftYPos = -2.4; 
         public static final double Target6RightXPos = 1.25;
-        public static final double Target6RightYPos = 0.67;
+        public static final double Target6RightYPos = 1.1; // 0.7
 
         /* - - - - - - - TARGET 7 POSES - - - - - - - - */
         public static final double Target7LeftXPos = 0.89; 
         public static final double Target7LeftYPos = -3.021; 
         public static final double Target7RightXPos = 0.82;
-        public static final double Target7RightYPos = 0.17;
+        public static final double Target7RightYPos = 0.7;
 
         /* - - - - - - - TARGET 8 POSES - - - - - - - - */
         public static final double Target8LeftXPos = 1.3; 
         public static final double Target8LeftYPos = -2.65; 
         public static final double Target8RightXPos = 1;
-        public static final double Target8RightYPos = 0.61;
+        public static final double Target8RightYPos = 0.7;
 
         /* - - - - - - - TARGET 9 POSES - - - - - - - - */
         public static final double Target9LeftXPos = 1.1; 
         public static final double Target9LeftYPos = -2.65; 
         public static final double Target9RightXPos = 0.86;
-        public static final double Target9RightYPos = 0.61;
+        public static final double Target9RightYPos = 0.7;
 
         /* - - - - - - - TARGET 10 POSES - - - - - - - - */
         public static final double Target10LeftXPos = 1; 
         public static final double Target10LeftYPos = -2.66; 
         public static final double Target10RightXPos = 1;
-        public static final double Target10RightYPos = 0.63;
+        public static final double Target10RightYPos = 0.7;
 
         /* - - - - - - - TARGET 11 POSES - - - - - - - - */
         public static final double Target11LeftXPos = 0.86; 
         public static final double Target11LeftYPos = -2.9; 
         public static final double Target11RightXPos = 0.87;
-        public static final double Target11RightYPos = 0.27;
+        public static final double Target11RightYPos = 0.7;
 
         /* - - - - - - - TARGET 17 POSES - - - - - - - - */
         
         public static final double Target17LeftXPos = 1.265; 
         public static final double Target17LeftYPos = -3.021; 
         public static final double Target17RightXPos = 1.434;
-        public static final double Target17RightYPos = 0.27;
+        public static final double Target17RightYPos = 0.7;
 
         /* - - - - - - - TARGET 18 POSES - - - - - - - - */
         public static final double Target18LeftXPos = 1.265; 
         public static final double Target18LeftYPos = -3.021; 
         public static final double Target18RightXPos = 1.434;
-        public static final double Target18RightYPos = 0.27;
+        public static final double Target18RightYPos = 0.7;
 
         /* - - - - - - - TARGET 19 POSES - - - - - - - - */
         public static final double Target19LeftXPos = 1.265; 
@@ -81,19 +81,19 @@ public class Constants {
         public static final double Target20LeftXPos = 1.265; 
         public static final double Target20LeftYPos = -3.021; 
         public static final double Target20RightXPos = 1.434;
-        public static final double Target20RightYPos = 0.27;
+        public static final double Target20RightYPos = 1.8;
 
         /* - - - - - - - TARGET 21 POSES - - - - - - - - */
         public static final double Target21LeftXPos = 1.265; 
         public static final double Target21LeftYPos = -3.021; 
         public static final double Target21RightXPos = 1.434;
-        public static final double Target21RightYPos = 0.27;
+        public static final double Target21RightYPos = 0.7;
 
         /* - - - - - - - TARGET 22 POSES - - - - - - - - */
         public static final double Target22LeftXPos = 1.15; 
         public static final double Target22LeftYPos = -2.9; 
         public static final double Target22RightXPos = 1.15;
-        public static final double Target22RightYPos = 0.35;
+        public static final double Target22RightYPos = 0.7;
     }
 
     public static class IntakeConstants {
@@ -187,7 +187,7 @@ public class Constants {
 
         
         public static final double armPosVel = 0.3;
-        public static final double armPosAccel = 1;
+        public static final double armPosAccel = 0.5;// 1
         public static final double armPosJerk = 1600;
 
         // Arm Poses
@@ -204,16 +204,25 @@ public class Constants {
     }
     public class ClimbConstants {
         public static final int CLIMB_MOTOR_ID = 0;
-        public static final double CLIMB_SPEED = 0.2;
-         
+        public static final double CLIMB_SPEED = 0.8;
+        public static final double CLIMB_UP_POS = -92;
+        public static final double CLIMB_DOWN_POS = 155; // 530
+
         public static final int PID_IDX = 1;
 
         // ----------- PID ------------ //
-        public static final double kF = 0.1;
-        public static final double kP = 0.1;
-        public static final double kI = 0.0;
-        public static final double kD = 0.0;
+        public static final double climbPosKSSlot0 = 0.25;
+        public static final double climbPosKVSlot0 = 0.12;
+        public static final double climbPosKPSlot0 = 4;
+        public static final double climbPosKDSlot0 = 0;
 
-        
+        public static final double climbPosKSSlot1 = 0.25;
+        public static final double climbPosKVSlot1 = 0.12;
+        public static final double climbPosKPSlot1 = 8;
+        public static final double climbPosKDSlot1 = 0;
+
+        public static final double climbPosVel = 100;
+        public static final double climbPosAccel = 200;
+        public static final double climbPosJerk = 1000;
     }
 }

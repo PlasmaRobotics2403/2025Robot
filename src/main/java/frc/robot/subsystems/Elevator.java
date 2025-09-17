@@ -19,7 +19,7 @@ public class Elevator {
     private DigitalInput elevatorLimitSwitch;
 
     private boolean needToGoUp = false;
-
+    
     public elevatorState currentState;
     public enum elevatorState {
         IDLEHIGH,

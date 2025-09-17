@@ -68,12 +68,13 @@ public class StateManager extends SubsystemBase {
 
     }
 
-    public StateManager(Intake intake, Elevator elevator, Arm arm, LEDs leds, Vision vision) {
+    public StateManager(Intake intake, Elevator elevator, Arm arm, LEDs leds, Vision vision/*, Climb climb*/) {
         intakeTimer = new Timer();
         elevatorTimer = new Timer();
         currentState = robotState.IDLE;
         currentArmState = armState.IDLE;
         currentLevelTwoState = levelTwoStates.IDLE;
+        //this.climb = climb;
         this.intake = intake;
         this.elevator = elevator;
         this.arm = arm;
@@ -310,7 +311,6 @@ public class StateManager extends SubsystemBase {
                 } else {
                     arm.setIntakeState(armOuttakeState.IDLE);
                 }
-
                 break;
 
         }

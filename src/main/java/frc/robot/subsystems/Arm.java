@@ -20,6 +20,7 @@ public class Arm {
     private TalonFX endEffectorMotor;
     private CANcoder armEncoder;
     private boolean limitState;
+    private double armLowPosSpeed = ArmConstants.armRunSpeed/2; // controlled in the dashboard
     final MotionMagicVoltage rotArmRequest;
     final MotionMagicVoltage rotArmBackwardRequest;
 
@@ -109,7 +110,7 @@ public class Arm {
     }
 
     public void rotArm(double pos) {
-        rotArmRequest.Slot = 1;
+        rotArmRequest.Slot = 0;
         double gravityAssist = ArmConstants.armGravityK * Math.sin(2*Math.PI*(getRot()-0.25));
         SmartDashboard.putNumber("Arm Commanded Pos", pos);
         rotMotor.setControl(rotArmRequest.withPosition(pos).withFeedForward(gravityAssist));
@@ -125,7 +126,7 @@ public class Arm {
         //DriverStation.reportWarning("MOVING ARM", false);
         SmartDashboard.putNumber("Arm Commanded Pos", pos);
     }
-   
+
     public void setLimitMotion(boolean input) {
         limitState = input;
     }
@@ -155,6 +156,9 @@ public class Arm {
         SmartDashboard.putNumber("Arm Pos", getRot());
         SmartDashboard.putNumber("Arm Speed", rotMotor.get());
         SmartDashboard.putBoolean("Intake Virtual Limit Switch", limitState);
+
+        armLowPosSpeed = (Double) SmartDashboard.getNumber("Arm Low Pos Speed", ArmConstants.armRunSpeed/2);
+        SmartDashboard.putNumber("Arm Low Pos Speed", armLowPosSpeed);
     }
     public void periodic() {
         logging();
@@ -169,7 +173,7 @@ public class Arm {
                 runArm(ArmConstants.armRunSpeed * -1);
                 break;
             case SCORELOW:
-                runArm(ArmConstants.armRunSpeed/2);
+                runArm(armLowPosSpeed);
                 break;
              case ALGAE:
                 runArm(ArmConstants.armRunSpeed * -1);

@@ -74,8 +74,7 @@ public class RobotContainer {
         autoChooser.addRoutine("One Piece Mid", autoRoutines::onePieceMid);
         autoChooser.addRoutine("One Piece Far", autoRoutines::onePieceFar);
         autoChooser.addRoutine("One Piece Near", autoRoutines::onePieceNear);
-        autoChooser.addRoutine("2 Piece Red", autoRoutines::twoPieceAutoRed);
-        autoChooser.addRoutine("2 Piece Blue", autoRoutines::twoPieceAutoBlue);
+        autoChooser.addRoutine("2 Piece Far", autoRoutines::twoPieceFar);
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         configureBindings();
