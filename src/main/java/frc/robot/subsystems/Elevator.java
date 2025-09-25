@@ -55,7 +55,6 @@ public class Elevator {
         pivotSlot0Configs.kP = ElevatorConstants.elevatorPosKP;
         pivotSlot0Configs.kD = ElevatorConstants.elevatorPosKD;
 
-        
 
         var pivotMotionMagicConfigs = elevator1PosConfigs.MotionMagic;
         pivotMotionMagicConfigs.MotionMagicCruiseVelocity = ElevatorConstants.elevatorPosVel;    //rps
