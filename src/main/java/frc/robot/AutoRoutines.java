@@ -59,7 +59,6 @@ public class AutoRoutines extends SubsystemBase{
             }
             robotContainer.setAutoAligning(true);
             robotContainer.configureBindings();
-            DriverStation.reportWarning("AUTOALIGNING", false);
             // double xOutput = vision.moveRobotPoseX() * MaxSpeed;
             // double yOutput = vision.moveRobotPoseY() * MaxSpeed;
             // double spinOutput = vision.moveRobotPoseSpin() * MaxAngularRate;
@@ -160,7 +159,7 @@ public class AutoRoutines extends SubsystemBase{
                 run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
                 run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
                 run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
-                robotContainer.drive(0, 0, 0)
+                robotContainer.drive(0, 0, 0).withTimeout(0.1)
 
             )
         );
@@ -218,7 +217,7 @@ public AutoRoutine onePieceMid() {
                 run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
 
 
-                robotContainer.drive(0, 0, 0)
+                robotContainer.drive(0, 0, 0).withTimeout(0.01)
             )
         );
 
@@ -301,7 +300,7 @@ public AutoRoutine onePieceMid() {
                 run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(0.5),
                 run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
                 run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
-                robotContainer.drive(0, 0, 0)
+                robotContainer.drive(0, 0, 0).withTimeout(0.01)
             )
         );
 
@@ -352,7 +351,7 @@ public AutoRoutine onePieceMid() {
                 run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(0.5),
                 run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
                 run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
-                robotContainer.drive(0, 0, 0)
+                robotContainer.drive(0, 0, 0).withTimeout(0.01)
             )
         );
 

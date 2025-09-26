@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import java.lang.annotation.Target;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 import org.photonvision.proto.Photon;
@@ -30,6 +32,8 @@ public class Vision {
 
     private double rightPostPos = VisionConstants.Target6RightYPos;
 
+    private AprilTagFieldLayout layout;
+
     public boolean startedAutoAligning = false;
     public enum robotSideState {
         LEFT,
@@ -37,11 +41,11 @@ public class Vision {
         IDLE
     }
     public robotSideState currentState = robotSideState.IDLE;
-
+    
     public PIDController xController = new PIDController(0.14, 0, 0, 0.02); // 0.16
     public PIDController yController = new PIDController(0.08, 0, 0.001, 0.02);// 0.166
     public PIDController spinController = new PIDController(0.03, 0, 0.001, 0.02);// 0.05
-
+    
     private Rotation3d rotation = new Rotation3d();
     
     private Transform3d robotTransform3d = new Transform3d(0, 0, 0, rotation);
@@ -50,6 +54,8 @@ public class Vision {
     public Vision() {
         //movementXController = new PIDController(0.3, 0, 0);
         //movementYController = new PIDController(0.3, 0, 0);
+        layout = VisionConstants.kTagLayout;
+        AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
         spinController.enableContinuousInput(-180, 180);
         xController.setTolerance(0.5, 0.1);
         yController.setTolerance(0.5, 0.1);
@@ -64,7 +70,6 @@ public class Vision {
             if(result.getBestTarget() != null){
                 PhotonTrackedTarget target = result.getBestTarget();
                 lastTarget = target;
-                AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
                 if (aprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
                     robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), aprilTagFieldLayout.getTagPose(target.getFiducialId()).get(), robotTransform3d);
                 }
@@ -442,9 +447,10 @@ public class Vision {
                 currentTag = result.getBestTarget().getFiducialId();
                 PhotonTrackedTarget target = result.getBestTarget();
                 lastTarget = target;
+                var tagPose = layout.getTagPose(lastTarget.getFiducialId());
                 AprilTagFieldLayout aprilTagFieldLayout = AprilTagFieldLayout.loadField(AprilTagFields.kDefaultField);
-                if (aprilTagFieldLayout.getTagPose(target.getFiducialId()).isPresent()) {
-                    robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), aprilTagFieldLayout.getTagPose(target.getFiducialId()).get(), robotTransform3d);
+                if (tagPose.isPresent()) {
+                    robotPose = PhotonUtils.estimateFieldToRobotAprilTag(target.getBestCameraToTarget(), tagPose.get(), robotTransform3d);
                 }
             } else {
                 currentTag = 0;

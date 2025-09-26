@@ -79,6 +79,7 @@ public class Intake {
         currentConfigs.CurrentLimits.StatorCurrentLimitEnable = true;
 
     }
+
     public void runIntake(double speed) {
         DutyCycleOut intakeRequest = new DutyCycleOut(0.0);
         intakeMotor.setControl(intakeRequest.withOutput(speed));
