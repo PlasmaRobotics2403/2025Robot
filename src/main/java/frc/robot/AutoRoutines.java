@@ -43,11 +43,16 @@ public class AutoRoutines extends SubsystemBase{
     private final SwerveRequest.FieldCentric fieldCentric = new SwerveRequest.FieldCentric();
 
     public AutoRoutines(AutoFactory factory, StateManager stateManager, Swerve swerve, Vision vision, RobotContainer robotContainer) {
+        
         m_factory = factory;
         this.stateManager = stateManager;
         this.swerve = swerve;
         this.vision = vision;
         this.robotContainer = robotContainer;
+        
+        // AutoTrajectory BlueMiddleLeft2part1 = routine.trajectory("BlueMiddleLeft2part1");
+        // AutoTrajectory BlueMiddleLeft2part2 = routine.trajectory("BlueMiddleLeft2part2");
+        // AutoTrajectory BlueMiddleLeft2part3 = routine.trajectory("BlueMiddleLeft2part3");
     }
 
     public Command autoAlignCommand(boolean algignLeft) {
