@@ -75,7 +75,6 @@ public class RobotContainer {
         autoChooser.addRoutine("One Piece Far", autoRoutines::onePieceFar);
         autoChooser.addRoutine("One Piece Near", autoRoutines::onePieceNear);
         autoChooser.addRoutine("2 Piece Far", autoRoutines::twoPieceFar);
-        autoChooser.addRoutine("2 Piece Near", autoRoutines::twoPieceNear);
         SmartDashboard.putData("Auto Chooser", autoChooser);
 
         configureBindings();
@@ -125,7 +124,7 @@ public class RobotContainer {
         SmartDashboard.putNumber("RobotOutputX", driveXOutputRobot);
         SmartDashboard.putNumber("RobotOutputY", driveYOutputRobot);
 
-        //drivetrain.registerTelemetry(logger::telemeterize);
+        drivetrain.registerTelemetry(logger::telemeterize);
     } 
     
     public Command drive(double x, double y, double rot) {

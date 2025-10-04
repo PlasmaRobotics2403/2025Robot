@@ -186,10 +186,6 @@ public class Robot extends TimedRobot {
    if(driver.getStartButton()) {
     m_robotContainer.drivetrain.seedFieldCentric();
 }
-      
-
-
-
   }
 
   @Override
@@ -210,5 +206,6 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {
     
   }
+  
 
 }

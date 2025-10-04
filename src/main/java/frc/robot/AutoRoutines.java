@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.StateManager.armState;
 import frc.robot.StateManager.robotState;
 import frc.robot.generated.TunerConstants;
@@ -26,7 +25,7 @@ import frc.robot.subsystems.Vision;
 import frc.robot.subsystems.Vision.robotSideState;
 
 public class AutoRoutines extends SubsystemBase{
-    private AutoFactory m_factory = null;
+    private AutoFactory m_factory;
     private StateManager stateManager;
     private RobotContainer robotContainer;
     private Swerve swerve;
@@ -42,6 +41,25 @@ public class AutoRoutines extends SubsystemBase{
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage);
     private final SwerveRequest.FieldCentric fieldCentric = new SwerveRequest.FieldCentric();
 
+    // Auto Routines
+    final AutoRoutine twoPieceNearRoutine;
+    final AutoRoutine twoPieceFarRoutine;
+    final AutoRoutine onePieceFarRoutine;
+    final AutoRoutine onePieceNearRoutine;
+
+    // Autos
+    private AutoTrajectory twoPieceNear1;
+    private AutoTrajectory twoPieceNear2;
+    private AutoTrajectory twoPieceNear3;
+
+    private AutoTrajectory twoPieceFar1;
+    private AutoTrajectory twoPieceFar2;
+    private AutoTrajectory twoPieceFar3;
+
+    private AutoTrajectory onePieceFar1;
+
+    private AutoTrajectory onePieceNear1;
+
     public AutoRoutines(AutoFactory factory, StateManager stateManager, Swerve swerve, Vision vision, RobotContainer robotContainer) {
         
         m_factory = factory;
@@ -49,10 +67,48 @@ public class AutoRoutines extends SubsystemBase{
         this.swerve = swerve;
         this.vision = vision;
         this.robotContainer = robotContainer;
+
+        twoPieceNearRoutine = m_factory.newRoutine("twoPieceNear");
+        twoPieceFarRoutine = m_factory.newRoutine("twoPieceFar");
+        onePieceFarRoutine = m_factory.newRoutine("onePieceFar");
+        onePieceNearRoutine = m_factory.newRoutine("onePieceNear");
         
-        // AutoTrajectory BlueMiddleLeft2part1 = routine.trajectory("BlueMiddleLeft2part1");
-        // AutoTrajectory BlueMiddleLeft2part2 = routine.trajectory("BlueMiddleLeft2part2");
-        // AutoTrajectory BlueMiddleLeft2part3 = routine.trajectory("BlueMiddleLeft2part3");
+        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+            // Two Piece Near Blue
+            twoPieceNear1 = twoPieceNearRoutine.trajectory("BlueNearLeftpart1");
+            twoPieceNear2 = twoPieceNearRoutine.trajectory("BlueNearLeftpart2");
+            twoPieceNear3 = twoPieceNearRoutine.trajectory("BlueNearLeftpart3");
+
+            // Two Piece Far Blue
+            twoPieceFar1 = twoPieceFarRoutine.trajectory("RedFarLeftpart1");
+            twoPieceFar2 = twoPieceFarRoutine.trajectory("RedFarLeftpart2");
+            twoPieceFar3 = twoPieceFarRoutine.trajectory("RedFarLeftpart3");
+
+            // One Piece Far Blue
+            onePieceFar1 = onePieceFarRoutine.trajectory("Blue1PieceFar");
+
+            // One Piece Near Blue
+            onePieceNear1 = onePieceNearRoutine.trajectory("Blue1PieceNear");
+
+        } else {
+             // Two Piece Near Red
+            twoPieceNear1 = twoPieceNearRoutine.trajectory("RedNearLeftpart1");
+            twoPieceNear2 = twoPieceNearRoutine.trajectory("RedNearLeftpart2");
+            twoPieceNear3 = twoPieceNearRoutine.trajectory("RedNearLeftpart3");
+
+            // Two Piece Far Red
+            twoPieceFar1 = twoPieceFarRoutine.trajectory("RedFarLeftpart1");
+            twoPieceFar2 = twoPieceFarRoutine.trajectory("RedFarLeftpart2");
+            twoPieceFar3 = twoPieceFarRoutine.trajectory("RedFarLeftpart3");
+
+            // One Piece Far Red
+            onePieceFar1 = onePieceFarRoutine.trajectory("Red1PieceFar");
+
+            // One Piece Near Red
+            onePieceNear1 = onePieceNearRoutine.trajectory("Red1PieceNear");
+        }
+
+        
     }
 
     public Command autoAlignCommand(boolean algignLeft) {
@@ -103,81 +159,13 @@ public class AutoRoutines extends SubsystemBase{
         
         return routine;
     }
-    public AutoRoutine twoPieceAutoRed() {
-        final AutoRoutine routine = m_factory.newRoutine("Auto Align");
-        final AutoTrajectory path1 = routine.trajectory("RedMiddleLeft2part1");
-        final AutoTrajectory path2 = routine.trajectory("RedMiddleLeft2part2");
-        final AutoTrajectory path3 = routine.trajectory("RedMiddleLeft2part3");
-
-
-        routine.active().onTrue(
-            new SequentialCommandGroup(
-                path1.resetOdometry(),
-                path1.cmd(),
-                // swerve.applyRequest(()->swerve.driveToPos(new Pose2d(6.5, 4.5, new Rotation2d()))).until(()->swerve.isWithinPos(new Pose2d(6.5, 4.5, new Rotation2d()))),
-                // robotContainer.drive(0, 0, 0).withTimeout(0.1),
-                autoAlignCommand(true).withTimeout(2),
-                // stateManager.setStateL3Command().alongWith(waitCommand(1000)).withTimeout(4),
-                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
-                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
-                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
-                run(()->stateManager.setState(robotState.IDLE)).withTimeout(1),
-
-                path2.cmd().alongWith(new SequentialCommandGroup(new WaitCommand(2), run(() -> stateManager.setState(robotState.INTAKE)).withTimeout(1))),
-                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
-                path3.cmd(),
-                autoAlignCommand(true).withTimeout(1.5),
-                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
-                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
-                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
-                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
-                robotContainer.drive(0, 0, 0)
-
-            )
-        );
-
-        return routine;
-    }
-    public AutoRoutine twoPieceAutoBlue() {
-        final AutoRoutine routine = m_factory.newRoutine("Auto Align");
-        final AutoTrajectory path1 = routine.trajectory("BlueMiddleLeft2part1");
-        final AutoTrajectory path2 = routine.trajectory("BlueMiddleLeft2part2");
-        final AutoTrajectory path3 = routine.trajectory("BlueMiddleLeft2part3");
-
-
-        routine.active().onTrue(
-            new SequentialCommandGroup(
-                runOnce(()->swerve.resetPose(new Pose2d(7.2, 4.2, new Rotation2d()))),
-                swerve.applyRequest(()->swerve.driveToPos(new Pose2d(6.2, 4.2, new Rotation2d()))).until(()->swerve.isWithinPos(new Pose2d(6.5, 4.5, new Rotation2d()))).withTimeout(2),
-                robotContainer.drive(0, 0, 0).withTimeout(0.1),
-                autoAlignCommand(true).withTimeout(2),
-                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
-                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
-                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
-                run(()->stateManager.setState(robotState.IDLE)).withTimeout(1),
-
-                path2.cmd().alongWith(new SequentialCommandGroup(new WaitCommand(2), run(() -> stateManager.setState(robotState.INTAKE)).withTimeout(1))),
-                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
-                path3.cmd(),
-                autoAlignCommand(true).withTimeout(1.5),
-                run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
-                run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
-                run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
-                run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
-                robotContainer.drive(0, 0, 0).withTimeout(0.1)
-
-            )
-        );
-
-        return routine;
-    }
+    
+    
 
 public AutoRoutine onePieceMid() {
-        final AutoRoutine routine = m_factory.newRoutine("Auto Align");
-        final AutoTrajectory path1 = routine.trajectory("AutoAlignPath");
+        final AutoRoutine onePieceMidRoutine = m_factory.newRoutine("Auto Align");
 
-
-        routine.active().onTrue(
+        onePieceMidRoutine.active().onTrue(
             new SequentialCommandGroup(
                 runOnce(()->swerve.resetPose(new Pose2d(7.6, 4.5, new Rotation2d()))),
                 //path1.cmd(),
@@ -195,98 +183,57 @@ public AutoRoutine onePieceMid() {
             )
         );
 
-        return routine;
+        return onePieceMidRoutine;
     }
 
     public AutoRoutine onePieceNear() {
-        final AutoRoutine routine = m_factory.newRoutine("onePieceNear");
-        AutoTrajectory selectedPath;
-        boolean alginLeft;
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
-            selectedPath = routine.trajectory("Blue1PieceNear");
-            alginLeft = true;
-        } else {
-            selectedPath = routine.trajectory("Red1PieceNear");
-            alginLeft = true;
-        }
+        boolean alginLeft = false;
 
-        routine.active().onTrue(
+        onePieceNearRoutine.active().onTrue(
             new SequentialCommandGroup(
-                selectedPath.resetOdometry(),
-                selectedPath.cmd(),
+                onePieceNear1.resetOdometry(),
+                onePieceNear1.cmd(),
                 robotContainer.drive(0, 0, 0).withTimeout(0.1),
                 autoAlignCommand(alginLeft).withTimeout(2),
                 run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
                 run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
                 run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
                 run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
-
-
                 robotContainer.drive(0, 0, 0).withTimeout(0.01)
             )
         );
 
-        return routine;
+        return onePieceNearRoutine;
     }
 
     public AutoRoutine onePieceFar() {
-        final AutoRoutine routine = m_factory.newRoutine("onePieceFar");
-        AutoTrajectory selectedPath;
-        boolean alginLeft;
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
-            selectedPath = routine.trajectory("Blue1PieceFar");
-            alginLeft = true;
-        } else {
-            selectedPath = routine.trajectory("Red1PieceFar");
-            alginLeft = true;
-        }
-
-        routine.active().onTrue(
+        boolean alginLeft = true;
+        onePieceFarRoutine.active().onTrue(
             new SequentialCommandGroup(
-                selectedPath.resetOdometry(),
-                selectedPath.cmd(),
+                onePieceFar1.resetOdometry(),
+                onePieceFar1.cmd(),
                 robotContainer.drive(0, 0, 0).withTimeout(0.1),
                 autoAlignCommand(alginLeft).withTimeout(2),
                 run(()->stateManager.setState(robotState.LEVELFOURSCORE)).withTimeout(2),
                 run(()->stateManager.setArmState(armState.RUNNINGOUT)).withTimeout(1),
                 run(()->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
                 run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
-
 
                 robotContainer.drive(0, 0, 0)
             )
         );
 
-        return routine;
+        return onePieceFarRoutine;
     }
 
     
     public AutoRoutine twoPieceFar() {
-        final AutoRoutine routine = m_factory.newRoutine("twoPieceFar");
-        AutoTrajectory selectedPath1;
-        AutoTrajectory selectedPath2;
-        AutoTrajectory selectedPath3;
-        AutoTrajectory selectedPath4;
+        boolean alginLeft = true;
 
-        boolean alginLeft;
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
-            selectedPath1 = routine.trajectory("BlueFarLeftpart1");
-            selectedPath2 = routine.trajectory("BlueFarLeftpart2");
-            selectedPath3 = routine.trajectory("BlueFarLeftpart3");
-
-            alginLeft = true;
-        } else {
-            selectedPath1 = routine.trajectory("RedFarLeftpart1");
-            selectedPath2 = routine.trajectory("RedFarLeftpart2");
-            selectedPath3 = routine.trajectory("RedFarLeftpart3");
-
-            alginLeft = true;
-        }
-
-        routine.active().onTrue(
+        twoPieceFarRoutine.active().onTrue(
             new SequentialCommandGroup(
-                selectedPath1.resetOdometry(),
-                selectedPath1.cmd(),
+                twoPieceFar1.resetOdometry(),
+                twoPieceFar1.cmd(),
                 robotContainer.drive(0, 0, 0).withTimeout(0.01),
                 autoAlignCommand(alginLeft).withTimeout(1.5),
                 robotContainer.drive(0, 0, 0).withTimeout(0.01),
@@ -296,8 +243,8 @@ public AutoRoutine onePieceMid() {
                 run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
                 run(() ->stateManager.setArmState(armState.INTAKE)).withTimeout(0.01),
                 run(()->stateManager.setState(robotState.INTAKE)).withTimeout(1),
-                selectedPath2.cmd(),
-                selectedPath3.cmd(),
+                twoPieceFar2.cmd(),
+                twoPieceFar3.cmd(),
                 //run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
                 //run(() ->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
                 autoAlignCommand(alginLeft).withTimeout(1),
@@ -309,35 +256,16 @@ public AutoRoutine onePieceMid() {
             )
         );
 
-        return routine;
+        return twoPieceFarRoutine;
     }
 
     public AutoRoutine twoPieceNear() {
-        final AutoRoutine routine = m_factory.newRoutine("twoPieceNear");
-        AutoTrajectory selectedPath1;
-        AutoTrajectory selectedPath2;
-        AutoTrajectory selectedPath3;
-        AutoTrajectory selectedPath4;
+        boolean alginLeft = true;
 
-        boolean alginLeft;
-        if(DriverStation.getAlliance().get() == Alliance.Blue) {
-            selectedPath1 = routine.trajectory("BlueNearLeftpart1");
-            selectedPath2 = routine.trajectory("BlueNearLeftpart2");
-            selectedPath3 = routine.trajectory("BlueNearLeftpart3");
-
-            alginLeft = true;
-        } else {
-            selectedPath1 = routine.trajectory("RedNearLeftpart1");
-            selectedPath2 = routine.trajectory("RedNearLeftpart2");
-            selectedPath3 = routine.trajectory("RedNearLeftpart3");
-
-            alginLeft = true;
-        }
-
-        routine.active().onTrue(
+        twoPieceNearRoutine.active().onTrue(
             new SequentialCommandGroup(
-                selectedPath1.resetOdometry(),
-                selectedPath1.cmd(),
+                twoPieceNear1.resetOdometry(),
+                twoPieceNear1.cmd(),
                 robotContainer.drive(0, 0, 0).withTimeout(0.01),
                 autoAlignCommand(alginLeft).withTimeout(1.5),
                 robotContainer.drive(0, 0, 0).withTimeout(0.01),
@@ -347,8 +275,8 @@ public AutoRoutine onePieceMid() {
                 run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
                 run(() ->stateManager.setArmState(armState.INTAKE)).withTimeout(0.01),
                 run(()->stateManager.setState(robotState.INTAKE)).withTimeout(1),
-                selectedPath2.cmd(),
-                selectedPath3.cmd(),
+                twoPieceNear2.cmd(),
+                twoPieceNear3.cmd(),
                 //run(()->stateManager.setState(robotState.IDLE)).withTimeout(0.01),
                 //run(() ->stateManager.setArmState(armState.IDLE)).withTimeout(0.01),
                 autoAlignCommand(alginLeft).withTimeout(1),
@@ -360,7 +288,45 @@ public AutoRoutine onePieceMid() {
             )
         );
 
-        return routine;
+        return twoPieceNearRoutine;
+    }
+
+    public void cacheAutos() {
+        if(DriverStation.getAlliance().get() == Alliance.Blue) {
+            // Two Piece Near Blue
+            twoPieceNear1 = twoPieceNearRoutine.trajectory("BlueNearLeftpart1");
+            twoPieceNear2 = twoPieceNearRoutine.trajectory("BlueNearLeftpart2");
+            twoPieceNear3 = twoPieceNearRoutine.trajectory("BlueNearLeftpart3");
+
+            // Two Piece Far Blue
+            twoPieceFar1 = twoPieceFarRoutine.trajectory("RedFarLeftpart1");
+            twoPieceFar2 = twoPieceFarRoutine.trajectory("RedFarLeftpart2");
+            twoPieceFar3 = twoPieceFarRoutine.trajectory("RedFarLeftpart3");
+
+            // One Piece Far Blue
+            onePieceFar1 = onePieceFarRoutine.trajectory("Blue1PieceFar");
+
+            // One Piece Near Blue
+            onePieceNear1 = onePieceNearRoutine.trajectory("Blue1PieceNear");
+
+        } else {
+             // Two Piece Near Red
+            twoPieceNear1 = twoPieceNearRoutine.trajectory("RedNearLeftpart1");
+            twoPieceNear2 = twoPieceNearRoutine.trajectory("RedNearLeftpart2");
+            twoPieceNear3 = twoPieceNearRoutine.trajectory("RedNearLeftpart3");
+
+            // Two Piece Far Red
+            twoPieceFar1 = twoPieceFarRoutine.trajectory("RedFarLeftpart1");
+            twoPieceFar2 = twoPieceFarRoutine.trajectory("RedFarLeftpart2");
+            twoPieceFar3 = twoPieceFarRoutine.trajectory("RedFarLeftpart3");
+
+            // One Piece Far Red
+            onePieceFar1 = onePieceFarRoutine.trajectory("Red1PieceFar");
+
+            // One Piece Near Red
+            onePieceNear1 = onePieceNearRoutine.trajectory("Red1PieceNear");
+        }
+
     }
 
 }
